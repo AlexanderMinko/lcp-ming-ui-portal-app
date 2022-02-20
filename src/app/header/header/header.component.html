@@ -1,0 +1,38 @@
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+  <img class="img-fluid rounded-circle mr-3" src="assets/images/avatar/smile.jpg" alt="notebook" style="height: 2em;">
+  <a class="navbar-brand" routerLink="/products">Socket</a>
+  <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggle-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a routerLink="/admin" class="nav-link">Admin Panel</a>
+      </li>
+    </ul>
+
+    <ul class="navbar-nav ml-auto" *ngIf="username">
+      <li class="nav-item disabled">
+        <a class="nav-link" routerLink="/account-details" routerLinkActive="active">
+          {{username}}
+        </a>
+      </li>
+    </ul>
+<!--    <img *ngIf="isLogged" src="{{account.photoUrl}}" class="rounded-circle mr-3" style="width: 35px">-->
+
+    <app-cart-status></app-cart-status>
+
+    <div *ngIf="!isLogged else logout" class="navbar-nav">
+      <a class="nav-link" type="submit" (click)="open()">
+        <i class="fas fa-sign-in-alt fa-lg"></i> Sign In</a>
+    </div>
+    <ng-template #logout>
+      <div class="navbar-nav">
+        <a class="nav-link" type="submit" (click)="signOut()">
+          <i class="fas fa-sign-out-alt fa-lg"></i> Sign Out</a>
+      </div>
+    </ng-template>
+  </div>
+</nav>

@@ -1,0 +1,12 @@
+.cart{
+  font-size:22px;
+  float:left;
+  color:#fff;
+  margin-left:3px
+}
+.card-body {
+  padding: 0.5rem;
+}
+.card {
+  border-radius: 15px;
+}

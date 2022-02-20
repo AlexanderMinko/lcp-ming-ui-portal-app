@@ -1,0 +1,69 @@
+/* You can add global styles to this file, and also import other style files */
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.content {
+  flex: 1 0 auto;
+  margin-top: 15px;
+}
+
+footer {
+  padding-top: 20px;
+  height: 60px;
+  vertical-align: middle;
+  background: #F5F5F5;
+  flex: 0 0 auto;
+}
+
+a, a:hover {
+  cursor: pointer;
+  text-decoration: none !important;
+  color: #142c44;
+}
+
+.modal-holder{
+  animation-name: example;
+  animation-duration: .3s;
+}
+
+@keyframes example {
+  0%   {transform: scale(0.3)}
+  100% {transform: scale(1)}
+}
+
+.col-xl-2 {
+  position: relative;
+  min-height: 1px;
+  padding: 0 15px;
+}
+
+@media(min-width: 1600px){
+  .col-xl-2 {
+    float: left;
+    width: 16.6667%;
+  }
+}
+
+@media(min-width: 1200px){
+  .col-xl-2 {
+    flex: none;
+    max-width: 25%;
+  }
+}
+html, body { height: 100%; }
+body {
+  margin: 0;
+  line-height: 1;
+}

@@ -1,0 +1,31 @@
+<div>
+  <select (change)="onChange($event.target)" class="form-control mb-3">
+    <option value="by-code">By code</option>
+    <option value="from-cheap-to-expensive">From cheap to expensive</option>
+    <option value="from-expensive-to-cheap">From expensive to cheap</option>
+    <option value="by-name">By name</option>
+  </select>
+
+  <div class="card mb-3">
+    <div class="card-header"> <i class="fas fa-search"></i> Find </div>
+    <div class="input-group" style="padding: 15px;">
+      <input #searchInput (keyup.enter)="doSearch(searchInput.value)" type="text" class="form-control"
+             placeholder="Search query...">
+      <div class="input-group-append">
+        <button (click)="doSearch(searchInput.value)" class="btn btn-outline-secondary"
+                type="button">Go!</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><i class="fas fa-list"></i> Categories </div>
+    <div class="list-group" style="border-radius: 0%;">
+      <div *ngFor="let category of categories">
+        <a routerLink="/products/{{category.id}}" routerLinkActive="active"
+           class="list-group-item list-group-item-action">{{category.name}}
+          <span style="float: right;" class="badge badge-pill badge-secondary">{{category.count}}</span></a>
+      </div>
+    </div>
+  </div>
+</div>

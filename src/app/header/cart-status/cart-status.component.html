@@ -1,0 +1,11 @@
+<a routerLink="/cart-details">
+  <div class="collapse navbar-collapse">
+    <span><i class="fa fa-shopping-cart mr-1 cart" aria-hidden="true"></i></span>
+    <div class="card">
+      <div class="card-body">
+        <strong>{{totalPrice | currency: 'USD'}}
+          <span style="border-left: 2px solid #212529; padding-left: 3px;">{{totalQuantity}}</span></strong>
+      </div>
+    </div>
+  </div>
+</a>

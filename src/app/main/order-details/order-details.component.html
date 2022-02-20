@@ -1,0 +1,37 @@
+<h4>Order № {{orderId}} deatils</h4>
+<hr>
+<table class="table table-bordered">
+  <thead>
+  <tr>
+    <th width="15%">Product Image</th>
+    <th width="55%">Product Detail</th>
+    <th width="30%">Options</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let orderItem of orderItems">
+    <td>
+      <img src="{{orderItem.imageUrl}}" class="img-fluid">
+    </td>
+    <td>
+      <div><span style="font-weight: bold">Name: </span> {{orderItem.name}}</div>
+      <div><span style="font-weight: bold">Description: </span>{{orderItem.description}}</div>
+      <div><span style="font-weight: bold">Price: </span>
+        {{orderItem.price | currency: 'USD'}}</div>
+    </td>
+    <td>
+      <div class="items"> Quantity:
+        <span style="font-weight: bold;">{{orderItem.count}}</span>
+      </div>
+      <p class="mt-2">Total cost: {{orderItem.price * orderItem.count | currency: 'USD'}}</p>
+    </td>
+  </tr>
+  </tbody>
+  <tr>
+    <td colspan="2"></td>
+    <td>
+      <p>Total Cost: {{totalCost | currency: 'USD'}}</p>
+      <p> Total Quantity: {{totalCount}} </p>
+    </td>
+  </tr>
+</table>

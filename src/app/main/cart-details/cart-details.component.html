@@ -1,0 +1,87 @@
+<div class="container-fluid">
+  <div *ngIf="cartItems.length > 0 && !isLoggined">
+    <div class="alert alert-warning">
+      <strong>Warning! </strong> For make Order, please, sign in!
+    </div>
+  </div>
+  <div *ngIf="cartItems.length === 0; else shoppingCart">
+    <div class="alert alert-warning">
+      <strong>Warning! </strong> Your shopping cart is empty!
+    </div>
+  </div>
+  <ng-template #shoppingCart>
+    <h4>Shopping cart</h4>
+    <hr />
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th width="15%">Product Image</th>
+          <th width="55%">Product Detail</th>
+          <th width="30%">Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let cartItem of cartItems">
+          <td>
+            <img src="{{ cartItem.imageUrl }}" class="img-fluid" />
+          </td>
+          <td>
+            <div>
+              <span style="font-weight: bold">Name: </span> {{ cartItem.name }}
+            </div>
+            <div>
+              <span style="font-weight: bold">Description: </span
+              >{{ cartItem.description }}
+            </div>
+            <div>
+              <span style="font-weight: bold">Price: </span>
+              {{ cartItem.price | currency: "USD" }}
+            </div>
+          </td>
+          <td>
+            <div class="items">
+              Quantity:
+              <div class="mt-2">
+                <button
+                  (click)="onIncrease(cartItem)"
+                  class="btn btn-light btn-sm"
+                >
+                  <strong><i class="fas fa-plus"></i></strong>
+                </button>
+                <span style="font-weight: bold" class="ml-3 mr-3">{{
+                  cartItem.quantity
+                }}</span>
+                <button
+                  (click)="onDecrease(cartItem)"
+                  class="btn btn-light btn-sm"
+                >
+                  <strong><i class="fas fa-minus"></i></strong>
+                </button>
+              </div>
+            </div>
+            <p class="mt-2">
+              Total cost:
+              {{ cartItem.price * cartItem.quantity | currency: "USD" }}
+            </p>
+            <button (click)="onRemove(cartItem)" class="btn btn-outline-dark">
+              Remove
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2"></td>
+          <td>
+            <p>Total Cost: {{ totalPrice | currency: "USD" }}</p>
+            <p>Total Quantity: {{ totalQuantity }}</p>
+            <button
+              (click)="onMakeOrder()"
+              class="btn btn-outline-dark"
+            >
+              Make Order
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-template>
+</div>
