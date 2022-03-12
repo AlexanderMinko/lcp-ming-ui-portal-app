@@ -11,7 +11,7 @@ import { AuthService } from '../../service/auth.service';
   styleUrls: ['./cart-details.component.css'],
 })
 export class CartDetailsComponent implements OnInit {
-  isLoggined = false;
+  isLogged = false;
   cartItems: CartItem[] = [];
   totalPrice = 0;
   totalQuantity = 0;
@@ -24,9 +24,7 @@ export class CartDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.authService.getAccount()) {
-      this.isLoggined = true;
-    }
+    this.authService.isLoggedIn().subscribe(isLogged => this.isLogged = isLogged);
     this.cartItems = this.cartService.cartItems;
     this.totalPrice = this.cartService.totalPrice;
     this.totalQuantity = this.cartService.totalQuantity;
@@ -39,7 +37,6 @@ export class CartDetailsComponent implements OnInit {
       orderItemRequestsDto: cartItems,
     } as OrderRequestDto;
     this.orderService.makeOrder(orderRequestDto).subscribe((data) => {
-      console.log(data);
       this.cartService.clearStorage('cartItems');
       this.router.navigate(['/order-details', data]);
     });

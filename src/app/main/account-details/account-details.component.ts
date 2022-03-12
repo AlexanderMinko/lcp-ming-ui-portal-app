@@ -1,24 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../service/auth.service';
-import { KeycloakService } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
 import { filter, switchMap } from 'rxjs/operators';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { LoginComponent } from '../login/login.component';
+import { OrderResponseDto } from '../../model/models';
+import { OrderService } from '../../service/order.service';
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css'],
+  selector: 'app-account-details',
+  templateUrl: './account-details.component.html',
+  styleUrls: ['./account-details.component.css'],
 })
-export class HeaderComponent implements OnInit {
+export class AccountDetailsComponent implements OnInit {
   isLogged = false;
   userProfile: Keycloak.KeycloakProfile;
+  orders: OrderResponseDto[] = [];
 
   constructor(
-    private keycloak: KeycloakService,
     private authService: AuthService,
-    private modalService: NgbModal
+    private orderService: OrderService
   ) {}
 
   ngOnInit(): void {
@@ -33,21 +32,9 @@ export class HeaderComponent implements OnInit {
       )
       .subscribe((profile) => {
         this.userProfile = profile;
+        this.orderService
+          .getOrdersByEmail(profile.email)
+          .subscribe((orders) => (this.orders = orders));
       });
-  }
-
-  onSignIn(): void {
-    this.keycloak.login();
-  }
-
-  onSignOut(): void {
-    this.keycloak.logout('http://localhost:4200');
-  }
-
-  onSignUp(): void {
-    this.modalService.open(LoginComponent, {
-      size: 'lg',
-      windowClass: 'modal-holder',
-    });
   }
 }

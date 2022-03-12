@@ -1,10 +1,24 @@
 import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+} from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { CartItem, Product, Review } from '../../model/models';
+import {
+  CartItem,
+  Product,
+  Review,
+  ReviewRequestDto,
+} from '../../model/models';
 import { ProductService } from '../../service/product.service';
 import { CartService } from '../../service/cart.service';
 import { KeycloakService } from 'keycloak-angular';
+import { AuthService } from '../../service/auth.service';
+import Keycloak from 'keycloak-js';
+import { filter, switchMap } from 'rxjs/operators';
+import { ReviewService } from '../../service/review.service';
 
 @Component({
   selector: 'app-product-details',
@@ -17,51 +31,70 @@ export class ProductDetailsComponent implements OnInit {
   product: Product;
   productId: string;
   isLogged = false;
-  isSubReviewsPresent = false;
-  currentReplies: number[] = [];
-  currentViewReplies: number[] = [];
+  currentReplies: string[] = [];
+  currentViewReplies: string[] = [];
+  userProfile: Keycloak.KeycloakProfile;
 
   constructor(
     private productService: ProductService,
     private activatedRoute: ActivatedRoute,
     private formBuilder: FormBuilder,
     private cartService: CartService,
-    private keycloakService: KeycloakService
-  ) // private reviewService: ReviewService
-  {}
+    private keycloakService: KeycloakService,
+    private authService: AuthService,
+    private reviewService: ReviewService
+  ) {}
 
-  async ngOnInit(): Promise<void> {
-    this.isLogged = await this.keycloakService.isLoggedIn();
+  ngOnInit(): void {
+    this.authService
+      .isLoggedIn()
+      .pipe(
+        filter((isLogged: boolean) => isLogged),
+        switchMap((isLogged: boolean) => {
+          this.isLogged = isLogged;
+          return this.authService.loadUserProfile();
+        })
+      )
+      .subscribe((profile) => {
+        this.userProfile = profile;
+      });
+
     this.activatedRoute.params.subscribe(() => {
       this.productId = this.activatedRoute.snapshot.params.id;
       this.getProduct();
-      // this.getReviews();
+      this.getReviews();
     });
     this.reviewFormGroup = this.formBuilder.group({
       review: new FormControl(''),
     });
   }
 
-  get review() {
-    return this.reviewFormGroup.get('review');
+  get review(): AbstractControl {
+    return this.reviewFormGroup.controls.review;
   }
 
-  // onSubmitReply(reply: string, id: number) {
-  //   const subReviewRequestDto: SubReviewRequestDto = new SubReviewRequestDto();
-  //   subReviewRequestDto.email = this.authService.getAccount().email;
-  //   subReviewRequestDto.subReview = reply;
-  //   subReviewRequestDto.reviewId = id;
-  //   this.reviewService.postSubReview(subReviewRequestDto)
-  //     .subscribe(data => {
-  //       console.log(data);
-  //     }, error => {
-  //       console.log(error);
-  //     }, () => {
-  //       this.getReviews();
-  //     });
-  // }
+  onSubmitReply(reply: string, id: string): void {
+    const reviewRequestDto = {
+      content: reply,
+      accountId: this.userProfile.id,
+      productId: this.product.id,
+      parentId: id,
+    } as ReviewRequestDto;
+    this.reviewService.postReview(reviewRequestDto).subscribe(
+      () => {
+        this.reviewFormGroup.reset();
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        this.getReviews();
+      }
+    );
+    console.log(`Reply: ${reply}, id: ${id}`);
+  }
 
-  onViewReplies(id: number) {
+  onViewReplies(id: string): void {
     if (this.currentViewReplies.includes(id)) {
       this.currentViewReplies = this.currentViewReplies.filter(
         (el) => el !== id
@@ -72,47 +105,52 @@ export class ProductDetailsComponent implements OnInit {
     console.log(this.currentViewReplies);
   }
 
-  onReplies(id: number) {
+  onReplies(id: string): void {
     if (this.currentReplies.includes(id)) {
-      this.currentReplies = this.currentReplies.filter((el) => el !== id);
+      this.currentReplies = this.currentReplies.filter((reply) => reply !== id);
     } else {
       this.currentReplies.push(id);
     }
     console.log(this.currentReplies);
   }
 
-  getProduct() {
-    this.productService
-      .getProductById(this.productId)
-      .subscribe((data: Product) => {
-        this.product = data;
+  getProduct(): void {
+    this.productService.getProductById(this.productId).subscribe((product) => {
+      this.product = product;
+    });
+  }
+
+  getReviews(): void {
+    this.reviewService
+      .getReviewsByProductId(this.productId)
+      .subscribe((reviews) => {
+        this.reviews = reviews;
+        console.log(reviews);
+        reviews.forEach(el => console.log(!!el.childrenReviews));
       });
   }
 
-  // getReviews() {
-  //   this.reviewService.getReviewsByProductId(this.productId)
-  //     .subscribe((data: Review[]) => {
-  //       this.reviews = data;
-  //     });
-  // }
-
-  onSubmit() {
-    // const reviewRequestDto: ReviewRequestDto = new ReviewRequestDto();
-    // reviewRequestDto.review = this.review.value;
-    // reviewRequestDto.email = this.authService.getAccount().email;
-    // reviewRequestDto.productId = this.productId;
-    // this.reviewService.postReview(reviewRequestDto)
-    //   .subscribe(data => {
-    //     console.log(data);
-    //     this.reviewFormGroup.reset();
-    //   }, error => {
-    //     console.log(error);
-    //   }, () => {
-    //     this.getReviews();
-    //   });
+  onSubmit(): void {
+    const reviewRequestDto = {
+      content: this.review.value,
+      accountId: this.userProfile.id,
+      productId: this.product.id,
+      parentId: null,
+    } as ReviewRequestDto;
+    this.reviewService.postReview(reviewRequestDto).subscribe(
+      () => {
+        this.reviewFormGroup.reset();
+      },
+      (error) => {
+        console.log(error);
+      },
+      () => {
+        this.getReviews();
+      }
+    );
   }
 
-  onAddToCart() {
+  onAddToCart(): void {
     const cartItem: CartItem = new CartItem(this.product);
     this.cartService.addToCart(cartItem);
   }

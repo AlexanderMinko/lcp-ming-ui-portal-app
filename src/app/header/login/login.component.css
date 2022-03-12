@@ -1,0 +1,22 @@
+input.ng-invalid.ng-touched {
+  border: 1px solid red;
+}
+
+.register-btn {
+  width: 100% !important;
+  text-align: center;
+}
+
+.modal-header {
+  padding: 0.6rem 1rem;
+}
+
+.example-form {
+  min-width: 150px;
+  max-width: 300px;
+  width: 100%;
+}
+
+.example-full-width {
+  width: 100%;
+}

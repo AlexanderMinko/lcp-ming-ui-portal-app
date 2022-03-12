@@ -1,5 +1,5 @@
 <div class="container-fluid">
-  <div *ngIf="cartItems.length > 0 && !isLoggined">
+  <div *ngIf="cartItems.length > 0 && !isLogged">
     <div class="alert alert-warning">
       <strong>Warning! </strong> For make Order, please, sign in!
     </div>
@@ -76,6 +76,7 @@
             <button
               (click)="onMakeOrder()"
               class="btn btn-outline-dark"
+              [disabled]="!isLogged"
             >
               Make Order
             </button>

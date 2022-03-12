@@ -16,6 +16,9 @@ import { HeaderComponent } from './header/header/header.component';
 import { CartStatusComponent } from './header/cart-status/cart-status.component';
 import { KeycloakAngularModule, KeycloakService } from 'keycloak-angular';
 import { initializeKeycloak } from './app.init';
+import { AccountDetailsComponent } from './main/account-details/account-details.component';
+import { LoginComponent } from './header/login/login.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -28,6 +31,8 @@ import { initializeKeycloak } from './app.init';
     FooterComponent,
     HeaderComponent,
     CartStatusComponent,
+    AccountDetailsComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -36,6 +41,7 @@ import { initializeKeycloak } from './app.init';
     HttpClientModule,
     ReactiveFormsModule,
     KeycloakAngularModule,
+    NgbModule,
   ],
   providers: [
     {

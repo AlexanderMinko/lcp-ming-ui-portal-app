@@ -1,20 +1,24 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-7" style="border-right: 1px solid #dee2e6;">
+    <div class="col-7" style="border-right: 1px solid #dee2e6">
       <h3>About product</h3>
-      <hr>
-      <img src="{{product?.imageUrl}}" height="500" class="datail-image">
-      <h3>{{product?.name}}</h3>
-      <div><strong>{{product?.price | currency:'USD'}}</strong></div>
-      <button (click)="onAddToCart()" class="btn btn-dark mt-2">Add to cart</button>
-      <hr>
+      <hr />
+      <img src="{{ product?.imageUrl }}" height="500" class="datail-image" />
+      <h3>{{ product?.name }}</h3>
+      <div>
+        <strong>{{ product?.price | currency: "USD" }}</strong>
+      </div>
+      <button (click)="onAddToCart()" class="btn btn-dark mt-2">
+        Add to cart
+      </button>
+      <hr />
       <h4>Description</h4>
-      <p>{{product?.description}}</p>
+      <p>{{ product?.description }}</p>
       <a routerLink="/products" class="btn btn-outline-dark">Back</a>
     </div>
     <div class="col-5">
       <h3>Reviews</h3>
-      <hr>
+      <hr />
 
       <ng-template #elseTemplate>
         <div class="alert alert-warning" role="alert">
@@ -22,63 +26,103 @@
         </div>
       </ng-template>
 
-      <form *ngIf="isLogged else elseTemplate" [formGroup]="reviewFormGroup" (ngSubmit)="onSubmit()">
+      <form
+        *ngIf="isLogged; else elseTemplate"
+        [formGroup]="reviewFormGroup"
+        (ngSubmit)="onSubmit()"
+      >
         <div class="form-group">
           <label for="review">Leave your review</label>
-          <textarea formControlName="review" class="form-control" id="review" rows="3"></textarea>
+          <textarea
+            formControlName="review"
+            class="form-control"
+            id="review"
+            rows="3"
+          ></textarea>
         </div>
         <button type="submit" class="btn btn-dark">Sumbit</button>
       </form>
 
-      <div *ngFor="let review of reviews;">
+      <div *ngFor="let review of reviews">
         <div class="card mb-3 mt-3">
-
           <div class="card-header">
-            <img [src]="review.reviewerPhotoUrl" height="30px" class="rounded-circle">
-            {{review.reviewerFirstName}} {{review.reviewerLastName}}
-            <span style="float: right;"> {{review.duration}}</span>
+            <img
+              [src]="review.reviewerPhotoUrl"
+              height="30px"
+              class="rounded-circle"
+            />
+            {{ review.reviewerFirstName }} {{ review.reviewerLastName }}
+            <span style="float: right"> {{ review.duration }}</span>
           </div>
 
           <div class="card-body">
-            {{review.review}}
-            <hr>
-<!--            <button *ngIf="isLogged" (click)="onReplies(review.id)" class="btn btn-light btn-sm mr-3">Reply</button>-->
-<!--            <button *ngIf="review.countOfSubReview > 0" type="button" class="btn btn-light btn-sm"-->
-<!--                    (click)="onViewReplies(review.id)">-->
-<!--              View Replies ({{review.countOfSubReview}})</button>-->
+            {{ review.content }}
+            <hr />
+            <button
+              *ngIf="isLogged"
+              (click)="onReplies(review.id)"
+              class="btn btn-light btn-sm mr-3"
+            >
+              Reply
+            </button>
+            <button
+              *ngIf="review?.childrenReviews && review.childrenReviews?.length"
+              type="button"
+              class="btn btn-light btn-sm"
+              (click)="onViewReplies(review.id)"
+            >
+              View Replies ({{ review.childrenReviews?.length }})
+            </button>
           </div>
         </div>
 
-        <div *ngIf="currentReplies.includes(1)" class="row">
+        <div *ngIf="currentReplies.includes(review.id)" class="row">
           <div class="col-1"></div>
           <div class="col-11 input-group mb-1">
-            <input #Reply type="text" class="form-control" placeholder="Enter your answer...">
+            <input
+              #Reply
+              type="text"
+              class="form-control"
+              placeholder="Enter your answer..."
+            />
             <div class="input-group-append">
-<!--              <button (click)="onSubmitReply(Reply.value, review.id)"-->
-<!--                      class="btn btn-outline-secondary btn-sm">Reply</button>-->
+              <button
+                (click)="onSubmitReply(Reply.value, review.id)"
+                class="btn btn-outline-secondary btn-sm"
+              >
+                Reply
+              </button>
             </div>
           </div>
         </div>
 
-<!--        <div *ngIf="currentViewReplies.includes(review.id)">-->
-<!--          <div *ngFor="let subReview of review.subReviewResponseDtos" class="row">-->
-<!--            <div class="col-1"></div>-->
-<!--            <div class="col-11 mb-1">-->
-<!--              <div class="card" style="font-size: 14px;">-->
-<!--                <div class="card-header">-->
-<!--                  <img [src]="subReview.reviewerPhotoUrl" height="20px" class="rounded-circle">-->
-<!--                  {{subReview.reviewerFirstName}} {{subReview.reviewerLastName}}-->
-<!--                  <span style="float: right;"> {{subReview.duration}}</span>-->
-<!--                </div>-->
-<!--                <div class="card-body">-->
-<!--                  <span> {{subReview.subReview}}</span>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-
+        <div *ngIf="currentViewReplies.includes(review.id)">
+          <div
+            *ngFor="let subReview of review.childrenReviews"
+            class="row"
+          >
+            <div class="col-1"></div>
+            <div class="col-11 mb-1">
+              <div class="card" style="font-size: 14px">
+                <div class="card-header">
+                  <img
+                    [src]="subReview.reviewerPhotoUrl"
+                    height="20px"
+                    class="rounded-circle"
+                  />
+                  {{ subReview.reviewerFirstName }}
+                  {{ subReview.reviewerLastName }}
+                  <span style="float: right"> {{ subReview.duration }}</span>
+                </div>
+                <div class="card-body">
+                  <span> {{ subReview.content }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
 </div>

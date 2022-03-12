@@ -37,6 +37,32 @@ export class CartItem {
   }
 }
 
+export interface ReviewRequestDto {
+  content: string;
+  accountId: string;
+  productId: string;
+  parentId: string | null;
+}
+
+export interface Review {
+  id: string;
+  content: string;
+  duration: string;
+  reviewerFirstName: string;
+  reviewerLastName: string;
+  reviewerPhotoUrl: string;
+  childrenReviews: ChildrenReview[];
+}
+
+export interface ChildrenReview {
+  id: string;
+  content: string;
+  duration: string;
+  reviewerFirstName: string;
+  reviewerLastName: string;
+  reviewerPhotoUrl: string;
+}
+
 export class OrderItemRequestDto {
   count: number;
   productId: string;
@@ -45,16 +71,6 @@ export class OrderItemRequestDto {
     this.count = cartItem.quantity;
     this.productId = cartItem.id;
   }
-}
-
-export interface Review {
-  id: string;
-  review: string;
-  duration: string;
-  countOfSubReview: number;
-  reviewerFirstName: string;
-  reviewerLastName: string;
-  reviewerPhotoUrl: string;
 }
 
 export interface OrderItemResponseDto {
@@ -71,6 +87,14 @@ export interface OrderRequestDto {
 }
 
 export interface OrderResponseDto {
-  id: number;
+  id: string;
   createdDate: Date;
+}
+
+export interface RegistrationRequest {
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
 }
