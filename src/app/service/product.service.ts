@@ -11,18 +11,32 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  getProductBySearch(
-    name: string | undefined,
-    page: number,
-    size: number
-  ): Observable<ProductResponse> {
-    return this.http.get<ProductResponse>(
-      `${this.baseUrl}/search?name=${name}&page=${page}&size=${size}`
-    );
-  }
-
   getProducts(page: number, size: number): Observable<ProductResponse> {
     const params = new HttpParams().set('page', page).set('size', size);
+    return this.http.get<ProductResponse>(`${this.baseUrl}`, { params });
+  }
+
+  getProductsByCategory(
+    page: number,
+    size: number,
+    categoryId: string
+  ): Observable<ProductResponse> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('category_id', categoryId);
+    return this.http.get<ProductResponse>(`${this.baseUrl}`, { params });
+  }
+
+  searchProducts(
+    page: number,
+    size: number,
+    freeText: string
+  ): Observable<ProductResponse> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('free_text', freeText);
     return this.http.get<ProductResponse>(`${this.baseUrl}`, { params });
   }
 
@@ -30,45 +44,20 @@ export class ProductService {
     return this.http.get<Category[]>(`${this.baseUrl}/categories`);
   }
 
-  getProductsByCategory(
-    id: number | undefined,
-    page: number,
-    size: number
-  ): Observable<ProductResponse> {
-    return this.http.get<ProductResponse>(
-      `${this.baseUrl}/by-category?id=${id}&page=${page}&size=${size}`
-    );
-  }
-
   getProductById(id: string): Observable<Product> {
     return this.http.get<Product>(`${this.baseUrl}/${id}`);
   }
 
-  getProductsSorterByPriceAsc(
+  getProductsSorted(
     page: number,
-    size: number
+    size: number,
+    sort: string
   ): Observable<ProductResponse> {
-    return this.http.get<ProductResponse>(
-      `${this.baseUrl}/by-price-asc?page=${page}&size=${size}`
-    );
-  }
-
-  getProductsSorterByPriceDesc(
-    page: number,
-    size: number
-  ): Observable<ProductResponse> {
-    return this.http.get<ProductResponse>(
-      `${this.baseUrl}/by-price-desc?page=${page}&size=${size}`
-    );
-  }
-
-  getProductsSorterByName(
-    page: number,
-    size: number
-  ): Observable<ProductResponse> {
-    return this.http.get<ProductResponse>(
-      `${this.baseUrl}/by-name?page=${page}&size=${size}`
-    );
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size)
+      .set('sort', sort);
+    return this.http.get<ProductResponse>(`${this.baseUrl}`, { params });
   }
 }
 

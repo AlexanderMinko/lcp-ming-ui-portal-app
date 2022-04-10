@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ProductService } from '../../service/product.service';
+import { ProductService } from '../../../service/product.service';
 import { Router } from '@angular/router';
-import { Category } from '../../model/models';
+import { Category } from '../../../model/models';
 
 @Component({
   selector: 'app-aside',

@@ -1,10 +1,10 @@
 <div class="container-fluid">
-  <div *ngIf="cartItems.length > 0 && !isLogged">
+  <div *ngIf="cartItems.length && !isLogged">
     <div class="alert alert-warning">
-      <strong>Warning! </strong> For make Order, please, sign in!
+      <strong>Warning! </strong> To make an order, please, sign in!
     </div>
   </div>
-  <div *ngIf="cartItems.length === 0; else shoppingCart">
+  <div *ngIf="!cartItems.length; else shoppingCart">
     <div class="alert alert-warning">
       <strong>Warning! </strong> Your shopping cart is empty!
     </div>

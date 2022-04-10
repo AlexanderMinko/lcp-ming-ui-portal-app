@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CartItem, Product } from '../../model/models';
-import {ProductResponse, ProductService} from '../../service/product.service';
+import { ProductResponse, ProductService } from '../../service/product.service';
 import { ActivatedRoute } from '@angular/router';
 import { CartService } from '../../service/cart.service';
 
@@ -11,18 +11,15 @@ import { CartService } from '../../service/cart.service';
 })
 export class ProductListComponent implements OnInit {
   products: Product[] = [];
-  page = 1;
+  page = 0;
   size = 12;
   totalElements = 0;
   isPageFullLoaded = false;
   isSearchMode = false;
   isLoggedChange = false;
-
-  currentCategoryId: number;
-  previousCategoryId: number;
-
+  currentCategoryId: string;
+  previousCategoryId: string;
   searchWord: string;
-
   previousSortedParam: string;
 
   constructor(
@@ -32,26 +29,25 @@ export class ProductListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // this.authService.isLoggedChange.subscribe((data: boolean) => {
-    //   this.isLoggedChange = data;
-    // });
     this.activatedRoute.params.subscribe(() => {
       this.showListProducts();
     });
   }
 
-  // tslint:disable-next-line:typedef
-  showListProducts() {
+  showListProducts(): void {
     const hasSearch: boolean =
       this.activatedRoute.snapshot.paramMap.has('name');
     const hasCategoryId: boolean =
       this.activatedRoute.snapshot.paramMap.has('id');
+    const sortedParam = this.activatedRoute.snapshot.params.type;
     if (hasCategoryId) {
       this.showListProductsByCategory();
     } else if (hasSearch) {
       this.showListProductsBySearch();
-    } else {
+    } else if (sortedParam) {
       this.showListProductsBySort();
+    } else {
+      this.showAllListProducts();
     }
   }
 
@@ -62,31 +58,15 @@ export class ProductListComponent implements OnInit {
       this.isPageFullLoaded = false;
     }
     this.previousSortedParam = sortedParam;
-    switch (sortedParam) {
-      case 'from-cheap-to-expensive':
-        this.productService
-          .getProductsSorterByPriceAsc(this.page, this.size)
-          .subscribe(this.proceedResult());
-        break;
-      case 'from-expensive-to-cheap':
-        this.productService
-          .getProductsSorterByPriceDesc(this.page, this.size)
-          .subscribe(this.proceedResult());
-        break;
-      case 'by-name':
-        this.productService
-          .getProductsSorterByName(this.page, this.size)
-          .subscribe(this.proceedResult());
-        break;
-      default:
-        this.showAllListProducts();
-    }
+    this.productService
+      .getProductsSorted(this.page, this.size, sortedParam)
+      .subscribe(this.proceedResult());
   }
 
   showListProductsBySearch(): void {
     this.searchWord = this.activatedRoute.snapshot.params.name;
     this.productService
-      .getProductBySearch(this.searchWord, this.page, this.size)
+      .searchProducts(this.page, this.size, this.searchWord)
       .subscribe(this.proceedResult());
   }
 
@@ -98,7 +78,7 @@ export class ProductListComponent implements OnInit {
     }
     this.previousCategoryId = this.currentCategoryId;
     this.productService
-      .getProductsByCategory(this.currentCategoryId, this.page, this.size)
+      .getProductsByCategory(this.page, this.size, this.currentCategoryId)
       .subscribe(this.proceedResult());
   }
 
@@ -109,7 +89,6 @@ export class ProductListComponent implements OnInit {
   }
 
   onAddToCart(product: Product): void {
-    console.log(product);
     const cartItem: CartItem = new CartItem(product);
     this.cartService.addToCart(cartItem);
   }

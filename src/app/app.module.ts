@@ -10,7 +10,7 @@ import { ProductDetailsComponent } from './main/product-details/product-details.
 import { ReactiveFormsModule } from '@angular/forms';
 import { OrderDetailsComponent } from './main/order-details/order-details.component';
 import { CartDetailsComponent } from './main/cart-details/cart-details.component';
-import { AsideComponent } from './aside/aside/aside.component';
+import { AsideComponent } from './main/product-list/aside/aside.component';
 import { FooterComponent } from './footer/footer/footer.component';
 import { HeaderComponent } from './header/header/header.component';
 import { CartStatusComponent } from './header/cart-status/cart-status.component';
