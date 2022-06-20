@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../service/auth.service';
 import Keycloak from 'keycloak-js';
-import { filter, switchMap } from 'rxjs/operators';
+import {filter, map, switchMap} from 'rxjs/operators';
 import { OrderResponseDto } from '../../model/models';
 import { OrderService } from '../../service/order.service';
 

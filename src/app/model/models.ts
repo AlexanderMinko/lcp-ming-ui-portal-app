@@ -11,12 +11,14 @@ export interface Product {
 export interface Category {
   id: string;
   name: string;
+  displayName: string;
   count: number;
 }
 
 export interface Producer {
   id: string;
   name: string;
+  displayName: string;
 }
 
 export class CartItem {
@@ -97,4 +99,13 @@ export interface RegistrationRequest {
   lastName: string;
   email: string;
   password: string;
+}
+
+export interface CreateProductParam {
+  name: string;
+  description: string;
+  price: string;
+  category: string;
+  producer: string;
+  image: any;
 }

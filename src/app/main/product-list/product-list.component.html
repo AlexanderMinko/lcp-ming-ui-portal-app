@@ -6,9 +6,6 @@
 </div>
 
 <div class="row">
-  <!--  <div class="col-12 col-sm-4 col-md-3 col-lg-2">-->
-  <!--    <aside></aside>-->
-  <!--  </div>-->
   <div class="col-12 col-sm-6 col-md-3 col-lg-2">
     <app-aside></app-aside>
   </div>
@@ -27,7 +24,7 @@
               <div class="img-thumbnail">
                 <img
                   class="img-fluid"
-                  [src]="product.imageUrl"
+                  [src]="imageBaseUrl + product.imageUrl"
                   alt="notebook"
                 />
               </div>

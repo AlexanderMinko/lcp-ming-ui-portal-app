@@ -34,6 +34,7 @@ export class ProductDetailsComponent implements OnInit {
   currentReplies: string[] = [];
   currentViewReplies: string[] = [];
   userProfile: Keycloak.KeycloakProfile;
+  imageBaseUrl = 'http://localhost:9000/ming';
 
   constructor(
     private productService: ProductService,
@@ -91,7 +92,6 @@ export class ProductDetailsComponent implements OnInit {
         this.getReviews();
       }
     );
-    console.log(`Reply: ${reply}, id: ${id}`);
   }
 
   onViewReplies(id: string): void {
@@ -102,7 +102,6 @@ export class ProductDetailsComponent implements OnInit {
     } else {
       this.currentViewReplies.push(id);
     }
-    console.log(this.currentViewReplies);
   }
 
   onReplies(id: string): void {
@@ -111,12 +110,12 @@ export class ProductDetailsComponent implements OnInit {
     } else {
       this.currentReplies.push(id);
     }
-    console.log(this.currentReplies);
   }
 
   getProduct(): void {
     this.productService.getProductById(this.productId).subscribe((product) => {
       this.product = product;
+      this.product.imageUrl = this.imageBaseUrl + this.product.imageUrl;
     });
   }
 
@@ -125,8 +124,6 @@ export class ProductDetailsComponent implements OnInit {
       .getReviewsByProductId(this.productId)
       .subscribe((reviews) => {
         this.reviews = reviews;
-        console.log(reviews);
-        reviews.forEach(el => console.log(!!el.childrenReviews));
       });
   }
 

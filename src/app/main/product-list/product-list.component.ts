@@ -22,6 +22,8 @@ export class ProductListComponent implements OnInit {
   searchWord: string;
   previousSortedParam: string;
 
+  imageBaseUrl = 'http://localhost:9000/ming';
+
   constructor(
     private productService: ProductService,
     private activatedRoute: ActivatedRoute,

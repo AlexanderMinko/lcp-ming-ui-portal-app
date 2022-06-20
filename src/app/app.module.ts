@@ -19,6 +19,8 @@ import { initializeKeycloak } from './app.init';
 import { AccountDetailsComponent } from './main/account-details/account-details.component';
 import { LoginComponent } from './header/login/login.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { MessengerComponent } from './main/messenger/messenger.component';
+import { AdminPanelComponent } from './main/admin-panel/admin-panel.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +35,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     CartStatusComponent,
     AccountDetailsComponent,
     LoginComponent,
+    MessengerComponent,
+    AdminPanelComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,7 +45,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     HttpClientModule,
     ReactiveFormsModule,
     KeycloakAngularModule,
-    NgbModule,
+    NgbModule
   ],
   providers: [
     {

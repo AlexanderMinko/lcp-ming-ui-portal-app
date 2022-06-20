@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Category, Product } from '../model/models';
+import {Category, CreateProductParam, Producer, Product} from '../model/models';
+
+const FORM_DATA_JSON = 'application/json';
 
 @Injectable({
   providedIn: 'root',
@@ -44,6 +46,10 @@ export class ProductService {
     return this.http.get<Category[]>(`${this.baseUrl}/categories`);
   }
 
+  getProducers(): Observable<Producer[]> {
+    return this.http.get<Producer[]>(`${this.baseUrl}/producers`);
+  }
+
   getProductById(id: string): Observable<Product> {
     return this.http.get<Product>(`${this.baseUrl}/${id}`);
   }
@@ -58,6 +64,19 @@ export class ProductService {
       .set('size', size)
       .set('sort', sort);
     return this.http.get<ProductResponse>(`${this.baseUrl}`, { params });
+  }
+
+  createProduct(
+    createProductParam: CreateProductParam,
+    image: any
+  ): Observable<void> {
+    const formData = new FormData();
+    formData.append(
+      'createParamJson',
+      new Blob([JSON.stringify(createProductParam)], { type: FORM_DATA_JSON })
+    );
+    formData.append('imageFile', image, image.name);
+    return this.http.post<void>(`${this.baseUrl}`, formData);
   }
 }
 
