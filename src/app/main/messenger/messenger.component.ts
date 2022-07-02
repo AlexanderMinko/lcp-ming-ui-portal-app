@@ -3,13 +3,7 @@ import { Observable, Observer, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import Keycloak from 'keycloak-js';
 import { AuthService } from '../../service/auth.service';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { SseClient } from 'angular-sse-client';
 import { closeEventSource } from 'angular-sse-client';
 import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
@@ -23,7 +17,7 @@ import { KeycloakService } from 'keycloak-angular';
 export class MessengerComponent implements OnInit {
   results: Message[] = [];
   resultObserver: Observable<Message[]>;
-  channel: string = '1';
+  channel: string;
   isLoggedIn: boolean;
   userProfile: Keycloak.KeycloakProfile;
   messageFormGroup: FormGroup;
@@ -38,9 +32,7 @@ export class MessengerComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService
-      .isLoggedIn()
-      .subscribe((isLogged) => (this.isLoggedIn = isLogged));
+    this.authService.isLoggedIn().subscribe((isLogged) => (this.isLoggedIn = isLogged));
 
     this.authService.getCurrentUserProfile().subscribe((loadedProfile) => {
       this.userProfile = loadedProfile;
@@ -57,19 +49,14 @@ export class MessengerComponent implements OnInit {
     // });
 
     this.messageFormGroup = this.formBuilder.group({
-      messageContent: new FormControl('', [
-        Validators.required,
-        Validators.minLength(2),
-      ]),
+      messageContent: new FormControl('', [Validators.required, Validators.minLength(2)]),
     });
   }
 
   onDeleteMessage(): void {
     // this.results = this.results.filter((message) => message.id !== id);
     this.http.get(`http://localhost:8099/v1/messages/find/1`).subscribe();
-    this.http
-      .delete(`http://localhost:8099/v1/messages/626a5888dc751b784c06b2a9`)
-      .subscribe();
+    this.http.delete(`http://localhost:8099/v1/messages/626a5888dc751b784c06b2a9`).subscribe();
     // this.resultObserver = this.createEventSourceObserver();
     // console.log(this.results);
   }
@@ -85,20 +72,14 @@ export class MessengerComponent implements OnInit {
     });
   }
 
-  createEventSourceObserverSecured(
-    channel: string,
-    token: string
-  ): Observable<Message[]> {
+  createEventSourceObserverSecured(channel: string, token: string): Observable<Message[]> {
     return new Observable<Message[]>((observer: Observer<Message[]>) => {
-      const source = new EventSourcePolyfill(
-        `${this.baseUrl}/stream/${channel}`,
-        {
-          headers: {
-            Authorization: token,
-          },
-          heartbeatTimeout: Number.MAX_SAFE_INTEGER
-        }
-      );
+      const source = new EventSourcePolyfill(`${this.baseUrl}/stream/${channel}`, {
+        headers: {
+          Authorization: token,
+        },
+        heartbeatTimeout: Number.MAX_SAFE_INTEGER,
+      });
       source.addEventListener('message', (event) => {
         this.results.push(JSON.parse(event.data));
         observer.next(this.results);
@@ -110,16 +91,15 @@ export class MessengerComponent implements OnInit {
     });
   }
 
-  async onChange(events: Event): Promise<void> {
+  async onChange(channel: string): Promise<void> {
     // this.createEventSourceObserver2(channel).subscribe();
-    this.channel = (events.target as HTMLInputElement).value;
+    // this.channel = (events.target as HTMLInputElement).value;
+    this.channel = channel;
     this.results = [];
     console.log('onChange');
+    console.log(this.channel);
     const token = await this.keycloakService.getToken();
-    this.resultObserver = this.createEventSourceObserverSecured(
-      this.channel,
-      'Bearer ' + token
-    );
+    this.resultObserver = this.createEventSourceObserverSecured(this.channel, 'Bearer ' + token);
 
     // closeEventSource(`${this.baseUrl}/stream/${this.channel}`);
     // // this.stream?.unsubscribe();

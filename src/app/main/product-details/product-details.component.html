@@ -1,9 +1,14 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-7" style="border-right: 1px solid #dee2e6">
+    <div class="col-7">
       <h3>About product</h3>
       <hr />
-      <img src="{{ product?.imageUrl }}" height="500" class="datail-image" />
+      <img
+        src="{{ product?.imageUrl }}"
+        height="500"
+        width="650"
+        class="datail-image"
+      />
       <h3>{{ product?.name }}</h3>
       <div>
         <strong>{{ product?.price | currency: "USD" }}</strong>
@@ -14,30 +19,18 @@
       <hr />
       <h4>Description</h4>
       <p>{{ product?.description }}</p>
+      <hr />
       <h4>Video Overview</h4>
-      <video width="300" controls class="mr-1 mb-1">
+      <video controls class="mr-1 mb-1" style="width: 50%">
         <source
           src="http://localhost:9000/testbucket/Juice%20WRLD%20-%20Conversations%20%28Skeler%20Remix%29.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=testadmin%2F20220612%2F%2Fs3%2Faws4_request&X-Amz-Date=20220612T052949Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=e16a2a38811f0050d706294c60ac2cab79da70ed03a876a04bed4d2c3e9d697d"
           type="video/mp4"
         />
         Your browser does not support HTML video.
       </video>
-      <video width="300" controls class="mr-1 mb-1">
-        <source
-            src="http://localhost:9000/testbucket/Juice%20WRLD%20-%20Conversations%20%28Skeler%20Remix%29.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=testadmin%2F20220612%2F%2Fs3%2Faws4_request&X-Amz-Date=20220612T052949Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=e16a2a38811f0050d706294c60ac2cab79da70ed03a876a04bed4d2c3e9d697d"
-            type="video/mp4"
-        />
-        Your browser does not support HTML video.
-      </video>
-      <video width="300" controls class="mr-1 mb-1">
-        <source
-            src="http://localhost:9000/testbucket/Juice%20WRLD%20-%20Conversations%20%28Skeler%20Remix%29.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=testadmin%2F20220612%2F%2Fs3%2Faws4_request&X-Amz-Date=20220612T052949Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=e16a2a38811f0050d706294c60ac2cab79da70ed03a876a04bed4d2c3e9d697d"
-            type="video/mp4"
-        />
-        Your browser does not support HTML video.
-      </video>
-      <div>
-        <a routerLink="/products" class="btn btn-outline-dark">Back</a>
+      <div class="mb-2">
+        <a routerLink="/products" class="btn btn-outline-dark">
+          <i class="fas fa-arrow-left"></i> Back</a>
       </div>
     </div>
     <div class="col-5">
@@ -64,7 +57,9 @@
             rows="3"
           ></textarea>
         </div>
-        <button type="submit" class="btn btn-dark">Sumbit</button>
+        <button type="submit" class="btn btn-dark" style="width: 100%">
+          Sumbit
+        </button>
       </form>
 
       <div *ngFor="let review of reviews">

@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { CartItem, OrderItemRequestDto, OrderRequestDto } from '../../model/models';
+import {
+  CartItem,
+  OrderItemRequestDto,
+  OrderRequestDto,
+} from '../../model/models';
 import { CartService } from '../../service/cart.service';
 import { OrderService } from '../../service/order.service';
 import { Router } from '@angular/router';
@@ -16,6 +20,8 @@ export class CartDetailsComponent implements OnInit {
   totalPrice = 0;
   totalQuantity = 0;
 
+  imageBaseUrl = 'http://localhost:9000/ming';
+
   constructor(
     private cartService: CartService,
     private authService: AuthService,
@@ -24,7 +30,9 @@ export class CartDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.authService.isLoggedIn().subscribe(isLogged => this.isLogged = isLogged);
+    this.authService
+      .isLoggedIn()
+      .subscribe((isLogged) => (this.isLogged = isLogged));
     this.cartItems = this.cartService.cartItems;
     this.totalPrice = this.cartService.totalPrice;
     this.totalQuantity = this.cartService.totalQuantity;

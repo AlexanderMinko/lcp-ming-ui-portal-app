@@ -4,6 +4,7 @@ export interface Product {
   description: string;
   imageUrl: string;
   price: number;
+  createdDate: Date;
   category: Category;
   producer: Producer;
 }
@@ -19,6 +20,7 @@ export interface Producer {
   id: string;
   name: string;
   displayName: string;
+  count: number;
 }
 
 export class CartItem {
@@ -108,4 +110,22 @@ export interface CreateProductParam {
   category: string;
   producer: string;
   image: any;
+}
+
+export interface CreateCategoryParam {
+  name: string;
+  displayName: string;
+  description: string;
+}
+
+export interface CreateProducerParam {
+  name: string;
+  displayName: string;
+  description: string;
+}
+
+export interface Account {
+  photoUrl: string;
+  realmName: string;
+  accountStatus: string;
 }

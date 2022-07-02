@@ -1,17 +1,7 @@
 import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormControl,
-  FormGroup,
-} from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import {
-  CartItem,
-  Product,
-  Review,
-  ReviewRequestDto,
-} from '../../model/models';
+import { CartItem, Product, Review, ReviewRequestDto } from '../../model/models';
 import { ProductService } from '../../service/product.service';
 import { CartService } from '../../service/cart.service';
 import { KeycloakService } from 'keycloak-angular';
@@ -96,9 +86,7 @@ export class ProductDetailsComponent implements OnInit {
 
   onViewReplies(id: string): void {
     if (this.currentViewReplies.includes(id)) {
-      this.currentViewReplies = this.currentViewReplies.filter(
-        (el) => el !== id
-      );
+      this.currentViewReplies = this.currentViewReplies.filter((el) => el !== id);
     } else {
       this.currentViewReplies.push(id);
     }
@@ -120,11 +108,9 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   getReviews(): void {
-    this.reviewService
-      .getReviewsByProductId(this.productId)
-      .subscribe((reviews) => {
-        this.reviews = reviews;
-      });
+    this.reviewService.getReviewsByProductId(this.productId).subscribe((reviews) => {
+      this.reviews = reviews;
+    });
   }
 
   onSubmit(): void {

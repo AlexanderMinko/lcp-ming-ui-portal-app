@@ -1,31 +1,55 @@
-<div>
-  <select (change)="onChange($event.target)" class="custom-select mb-3">
+<div class="card mb-3">
+  <div class="card-header"><i class="fas fa-sort-alpha-down"></i> Sort</div>
+  <select (change)="onChange($event)" class="custom-select">
     <option value="id">By code</option>
     <option value="price,ASC">From cheap to expensive</option>
     <option value="price,DESC">From expensive to cheap</option>
     <option value="name">By name</option>
   </select>
+</div>
 
-  <div class="card mb-3">
-    <div class="card-header"> <i class="fas fa-search"></i> Find </div>
-    <div class="input-group" style="padding: 15px;">
-      <input #searchInput (keyup.enter)="doSearch(searchInput.value)" type="text" class="form-control"
-             placeholder="Search query...">
-      <div class="input-group-append">
-        <button (click)="doSearch(searchInput.value)" class="btn btn-outline-secondary"
-                type="button">Go!</button>
-      </div>
+<div class="card mb-3">
+  <div class="card-header"><i class="fas fa-search"></i> Find</div>
+  <div class="input-group">
+    <input
+      #searchInput
+      (keyup.enter)="doSearch(searchInput.value)"
+      type="text"
+      class="form-control"
+      placeholder="Search query..."
+    />
+    <div class="input-group-append">
+      <button (click)="doSearch(searchInput.value)" class="btn btn-outline-secondary" type="button">Go!</button>
     </div>
   </div>
+</div>
 
-  <div class="card">
-    <div class="card-header"><i class="fas fa-list"></i> Categories </div>
-    <div class="list-group" style="border-radius: 0%;">
-      <div *ngFor="let category of categories">
-        <a routerLink="/products/{{category.id}}" routerLinkActive="active"
-           class="list-group-item list-group-item-action">{{category.name}}
-          <span style="float: right;" class="badge badge-pill badge-secondary">{{category.count}}</span></a>
-      </div>
+<div class="card mb-3">
+  <div class="card-header"><i class="fas fa-list"></i> Categories</div>
+  <div class="list-group" style="border-radius: 0%">
+    <div *ngFor="let category of categories">
+      <a
+        routerLink="/products/category_id/{{ category.id }}"
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action"
+        >{{ category.displayName }}
+        <span style="float: right" class="badge badge-pill badge-secondary">{{ category.count }}</span></a
+      >
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><i class="fas fa-list"></i> Producers</div>
+  <div class="list-group" style="border-radius: 0%">
+    <div *ngFor="let producer of producers">
+      <a
+        routerLink="/products/producer_id/{{ producer.id }}"
+        routerLinkActive="active"
+        class="list-group-item list-group-item-action"
+        >{{ producer.displayName }}
+        <span style="float: right" class="badge badge-pill badge-secondary">{{ 1 }}</span></a
+      >
     </div>
   </div>
 </div>

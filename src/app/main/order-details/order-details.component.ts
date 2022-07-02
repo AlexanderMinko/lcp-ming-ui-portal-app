@@ -14,21 +14,18 @@ export class OrderDetailsComponent implements OnInit {
   totalCost = 0;
   totalCount = 0;
 
-  constructor(
-    private orderService: OrderService,
-    private activatedRoute: ActivatedRoute
-  ) {}
+  imageBaseUrl = 'http://localhost:9000/ming';
+
+  constructor(private orderService: OrderService, private activatedRoute: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe(() => {
       this.orderId = this.activatedRoute.snapshot.params.id;
-      this.orderService
-        .getOrderItemByOrderId(this.orderId)
-        .subscribe((data: OrderItemResponseDto[]) => {
-          this.orderItems = data;
-          this.getTotalCost();
-          this.getTotalQuantity();
-        });
+      this.orderService.getOrderItemByOrderId(this.orderId).subscribe((data: OrderItemResponseDto[]) => {
+        this.orderItems = data;
+        this.getTotalCost();
+        this.getTotalQuantity();
+      });
     });
   }
 

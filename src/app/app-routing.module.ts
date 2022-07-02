@@ -7,7 +7,10 @@ import { OrderDetailsComponent } from './main/order-details/order-details.compon
 import { AccountDetailsComponent } from './main/account-details/account-details.component';
 import { AuthGuard } from './guard/auth.guard';
 import { MessengerComponent } from './main/messenger/messenger.component';
-import {AdminPanelComponent} from "./main/admin-panel/admin-panel.component";
+import { AdminPanelComponent } from './main/admin-panel/admin-panel.component';
+import { ProductManagementComponent } from './main/admin-panel/product-management/product-management.component';
+import { AccountManagementComponent } from './main/admin-panel/account-management/account-management.component';
+import { LCP_ADMIN } from './constants';
 
 const routes: Routes = [
   {
@@ -15,13 +18,22 @@ const routes: Routes = [
     component: ProductListComponent,
   },
   { path: 'product-details/:id', component: ProductDetailsComponent },
-  { path: 'products/:id', component: ProductListComponent },
+  { path: 'products/:attribute/:id', component: ProductListComponent },
   { path: 'search/:name', component: ProductListComponent },
   { path: 'sort/:type/:name/:id', component: ProductListComponent },
   { path: 'sort/:type/:name', component: ProductListComponent },
   { path: 'sort/:type', component: ProductListComponent },
   { path: 'cart-details', component: CartDetailsComponent },
-  { path: 'admin-panel', component: AdminPanelComponent},
+  {
+    path: 'admin-panel',
+    component: AdminPanelComponent,
+    children: [
+      { path: 'product-management', component: ProductManagementComponent },
+      { path: 'account-management', component: AccountManagementComponent },
+    ],
+    canActivate: [AuthGuard],
+    data: { roles: [LCP_ADMIN] },
+  },
   {
     path: 'order-details/:id',
     component: OrderDetailsComponent,

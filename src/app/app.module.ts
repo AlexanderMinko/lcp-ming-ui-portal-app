@@ -21,6 +21,11 @@ import { LoginComponent } from './header/login/login.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MessengerComponent } from './main/messenger/messenger.component';
 import { AdminPanelComponent } from './main/admin-panel/admin-panel.component';
+import { ProductManagementComponent } from './main/admin-panel/product-management/product-management.component';
+import { AccountManagementComponent } from './main/admin-panel/account-management/account-management.component';
+import { AddProducerComponent } from './main/product-list/product-bar/add-producer/add-producer.component';
+import { AddCategoryComponent } from './main/product-list/product-bar/add-category/add-category.component';
+import { AddProductComponent } from './main/product-list/product-bar/add-product/add-product.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +42,11 @@ import { AdminPanelComponent } from './main/admin-panel/admin-panel.component';
     LoginComponent,
     MessengerComponent,
     AdminPanelComponent,
+    ProductManagementComponent,
+    AccountManagementComponent,
+    AddProducerComponent,
+    AddCategoryComponent,
+    AddProductComponent,
   ],
   imports: [
     BrowserModule,

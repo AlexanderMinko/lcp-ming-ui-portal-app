@@ -1,76 +1,60 @@
 <div class="row">
-  <div class="col-3">
+  <div class="col-6">
     <h4>Account info</h4>
-    <hr>
+    <hr />
 
     <div class="mt-2">
       <label>ID:</label>
-      <p style="font-size: 22px;">{{userProfile?.id}}</p>
+      <p style="font-size: 22px">{{ userProfile?.id }}</p>
     </div>
 
     <div class="mt-2">
       <label>First Name:</label>
-      <p style="font-size: 22px;">{{userProfile?.firstName}}</p>
+      <p style="font-size: 22px">{{ userProfile?.firstName }}</p>
     </div>
 
     <div class="mt-4">
       <label>Last Name:</label>
-      <p style="font-size: 22px;">{{userProfile?.lastName}}</p>
+      <p style="font-size: 22px">{{ userProfile?.lastName }}</p>
     </div>
 
     <div class="mt-4">
       <label>Email:</label>
-      <p style="font-size: 22px;">{{userProfile?.email}}</p>
+      <p style="font-size: 22px">{{ userProfile?.email }}</p>
+    </div>
+
+    <div class="mt-4">
+      <label>Status:</label>
+      <p style="font-size: 22px">{{ account?.accountStatus }}</p>
+    </div>
+
+    <div class="mt-4">
+      <label>Realm:</label>
+      <p style="font-size: 22px">{{ account?.realmName }}</p>
     </div>
   </div>
 
-  <div class="col-4">
+  <div class="col-6">
     <h4>Orders</h4>
-    <hr>
+    <hr />
     <ng-template #noOrders>
-      <div class="alert alert-warning" role="alert">
-        You have no orders!
-      </div>
+      <div class="alert alert-warning" role="alert">You have no orders!</div>
     </ng-template>
-    <table *ngIf="orders.length > 0 else noOrders" class="table table-bordered">
+    <table *ngIf="orders.length > 0; else noOrders" class="table table-bordered">
       <thead>
-      <tr>
-        <th width="10%">ID</th>
-        <th width="90%">Created time</th>
-      </tr>
+        <tr>
+          <th width="10%">ID</th>
+          <th width="90%">Created time</th>
+        </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let order of orders">
-        <td>{{order.id.slice(0, 8)  }}</td>
-        <td><a routerLink="/order-details/{{order.id}}">{{order.createdDate | date: 'y MMMM d, HH:mm'}}</a>
-        </td>
-      </tr>
+        <tr *ngFor="let order of orders">
+          <td>{{ order.id.slice(0, 8) }}</td>
+          <td>
+            <a routerLink="/order-details/{{ order.id }}">{{ order.createdDate | date: 'y MMMM d, HH:mm' }}</a>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
-
-  <div class="col-5">
-    <h4>Reviews</h4>
-    <hr>
-    <ng-template #noReviews>
-      <div class="alert alert-warning" role="alert">
-        You have no reviews!
-      </div>
-    </ng-template>
-<!--    <div *ngIf="reviews?.length > 0 else noReviews">-->
-<!--      <div *ngFor="let review of reviews" class="card mb-3 mt-3">-->
-<!--        <div class="card-header">-->
-<!--          <img [src]="review.reviewerPhotoUrl" height="30px" class="rounded-circle">-->
-<!--          {{review.reviewerFirstName}} {{review.reviewerLastName}}-->
-<!--          <span style="float: right;"> {{review.duration}}</span>-->
-<!--        </div>-->
-<!--        <div class="card-body">-->
-<!--          {{review.review}}-->
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    <div *ngIf="reviews?.length === size" class="text-center hidden-print mb-4">-->
-<!--      <button (click)="loadMore()" class="btn btn-dark">Load more reviews</button>-->
-<!--    </div>-->
-<!--  </div>-->
 </div>

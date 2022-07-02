@@ -3,6 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from '../../service/auth.service';
 import {
   AbstractControl,
+  AsyncValidatorFn,
   FormBuilder,
   FormControl,
   FormGroup,
@@ -10,6 +11,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { RegistrationRequest } from '../../model/models';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -61,6 +64,23 @@ export class LoginComponent implements OnInit {
       return null;
     }
   }
+
+  fieldValidator(controlName: string): AsyncValidatorFn {
+    return (control: AbstractControl): Observable<ValidationErrors | null> => {
+      return this.authService.isUserExist(controlName, control.value).pipe(
+        map((res) => {
+          return res ? { [controlName + 'Exists']: true } : null;
+        })
+      );
+    };
+  }
+
+  checkPasswordMatch(group: FormGroup): ValidationErrors | null {
+    const password = group.get('password')?.value;
+    const confirmPassword = group.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { doNotMatch: true };
+  }
+
   get username(): AbstractControl | null {
     return this.authFormGroup.get('username');
   }
@@ -75,6 +95,9 @@ export class LoginComponent implements OnInit {
   }
   get lastname(): AbstractControl | null {
     return this.authFormGroup.get('lastname');
+  }
+  get confirmPassword(): AbstractControl | null {
+    return this.authFormGroup.get('confirmPassword');
   }
 
   onSubmit(): void {
@@ -92,12 +115,9 @@ export class LoginComponent implements OnInit {
         email: this.email?.value,
         password: this.password?.value,
       } as RegistrationRequest;
-      this.authService
-        .customRegistrationAccount(registrationRequest)
-        .subscribe((data) => {
-          console.log(data);
-          this.activeModal.dismiss('Cross click');
-        });
+      this.authService.customRegistrationAccount(registrationRequest).subscribe((data) => {
+        this.activeModal.dismiss('Cross click');
+      });
     }
   }
 }

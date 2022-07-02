@@ -28,8 +28,7 @@ export class AuthGuard extends KeycloakAuthGuard {
   ): Promise<boolean | UrlTree> {
     if (!this.authenticated) {
       await this.keycloak.login({
-        redirectUri: window.location.origin + state.url,
-        idpHint: 'google'
+        redirectUri: window.location.origin + state.url
       });
     }
 
@@ -42,7 +41,7 @@ export class AuthGuard extends KeycloakAuthGuard {
     }
 
     // Allow the user to proceed if all the required roles are present.
-    return requiredRoles.every((role) => this.roles.includes(role));
+    return requiredRoles.some((role) => this.roles.includes(role));
   }
 
 }

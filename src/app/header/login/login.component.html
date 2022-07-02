@@ -5,69 +5,134 @@
   </a>
 </div>
 <div class="modal-body">
-
-  <div class="row" style="padding: 15px;">
+  <div class="row" style="padding: 15px">
     <div class="col-12">
-
       <form [formGroup]="authFormGroup" (ngSubmit)="onSubmit()">
-
         <div class="form-group">
           <label for="firstname">Username</label>
-          <input type="text" formControlName="username" class="form-control" id="username"
-                 placeholder="Enter username...">
-          <small *ngIf="username?.invalid && username?.touched && !username?.dirty" style="color: red;">
-            Username is required!</small>
-          <small *ngIf="username?.invalid && username?.dirty && !username?.untouched" style="color: red;">
-            Username must have at least 2 chars</small>
+          <input
+            type="text"
+            formControlName="username"
+            class="form-control"
+            id="username"
+            placeholder="Enter username..."
+          />
+          <small *ngIf="username?.invalid && username?.touched && !username?.dirty" style="color: red">
+            Username is required!</small
+          >
+          <small
+            *ngIf="username?.invalid && username?.dirty && !username?.untouched && !username?.errors?.usernameExists"
+            style="color: red"
+          >
+            Username must have at least 2 chars</small
+          >
+          <small *ngIf="username?.errors?.usernameExists" style="color: red">
+            user with username {{ username?.value }} is already exists!</small
+          >
         </div>
 
         <div class="form-group">
           <label for="firstname">First name</label>
-          <input type="text" formControlName="firstname" class="form-control" id="firstname"
-                 placeholder="Enter first name...">
-          <small *ngIf="firstname?.invalid && firstname?.touched && !firstname?.dirty" style="color: red;">
-            First name is required!</small>
-          <small *ngIf="firstname?.invalid && firstname?.dirty && !firstname?.untouched" style="color: red;">
-            First name must have at least 2 chars</small>
+          <input
+            type="text"
+            formControlName="firstname"
+            class="form-control"
+            id="firstname"
+            placeholder="Enter first name..."
+          />
+          <small *ngIf="firstname?.invalid && firstname?.touched && !firstname?.dirty" style="color: red">
+            First name is required!</small
+          >
+          <small *ngIf="firstname?.invalid && firstname?.dirty && !firstname?.untouched" style="color: red">
+            First name must have at least 2 chars</small
+          >
         </div>
 
         <div class="form-group">
           <label for="lastname">Last name</label>
-          <input type="text" formControlName="lastname" class="form-control" id="lastname"
-                 placeholder="Enter last name...">
-          <small *ngIf="lastname?.invalid && lastname?.touched && !lastname?.dirty" style="color: red;">
-            Last name is required!</small>
-          <small *ngIf="lastname?.invalid && lastname?.dirty && !lastname?.untouched" style="color: red;">
-            Last name must have at least 2 chars</small>
+          <input
+            type="text"
+            formControlName="lastname"
+            class="form-control"
+            id="lastname"
+            placeholder="Enter last name..."
+          />
+          <small *ngIf="lastname?.invalid && lastname?.touched && !lastname?.dirty" style="color: red">
+            Last name is required!</small
+          >
+          <small *ngIf="lastname?.invalid && lastname?.dirty && !lastname?.untouched" style="color: red">
+            Last name must have at least 2 chars</small
+          >
         </div>
 
         <div class="form-group">
           <label for="email">Email address</label>
-          <input type="email" formControlName="email" class="form-control" id="email" placeholder="Enter email...">
-          <small *ngIf="email?.invalid && email?.touched && !email?.dirty" style="color: red;">
-            Email is required!</small>
-          <small *ngIf="email?.invalid && email?.dirty && !email?.untouched" style="color: red;">
-            Enter email like this: example@mail.com</small>
+          <input type="email" formControlName="email" class="form-control" id="email" placeholder="Enter email..." />
+          <small *ngIf="email?.invalid && email?.touched && !email?.dirty" style="color: red">
+            Email is required!</small
+          >
+          <small
+            *ngIf="email?.invalid && email?.dirty && !email?.untouched && !email?.errors?.emailExists"
+            style="color: red"
+          >
+            Enter email like this: example@mail.com</small
+          >
+          <small *ngIf="email?.errors?.emailExists" style="color: red">
+            user with email {{ email?.value }} is already exists!</small
+          >
         </div>
 
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" formControlName="password" class="form-control" id="password"
-                 placeholder="Enter password..." autocomplete="off">
-          <small *ngIf="password?.invalid && password?.touched && !password?.dirty" style="color: red !important;">
-            Password is required!</small>
-          <small *ngIf="password?.invalid && password?.dirty && !password?.untouched" style="color: red !important;">
-            Password must have at least 3 chars</small>
+          <input
+            type="password"
+            formControlName="password"
+            class="form-control"
+            id="password"
+            placeholder="Enter password..."
+            autocomplete="off"
+          />
+          <small *ngIf="password?.invalid && password?.touched && !password?.dirty" style="color: red !important">
+            Password is required!</small
+          >
+          <small *ngIf="password?.invalid && password?.dirty && !password?.untouched" style="color: red !important">
+            Password must have at least 3 chars</small
+          >
         </div>
 
-        <div *ngIf="errorMessage" class="mb-3" style="color: red; text-align: center;">
-          {{errorMessage}}
+        <div class="form-group">
+          <label for="password">Confirm password</label>
+          <input
+            type="password"
+            formControlName="confirmPassword"
+            class="form-control"
+            id="confirmPassword"
+            placeholder="Enter password again..."
+            autocomplete="off"
+          />
+          <small
+            *ngIf="confirmPassword?.invalid && confirmPassword?.touched && !confirmPassword?.dirty"
+            style="color: red !important"
+          >
+            Password is required!</small
+          >
+          <small
+            *ngIf="confirmPassword?.invalid && confirmPassword?.dirty && !confirmPassword?.untouched"
+            style="color: red !important"
+          >
+            Password must have at least 3 chars</small
+          >
+          <small *ngIf="authFormGroup?.errors?.doNotMatch && !confirmPassword?.untouched" style="color: red !important">
+            Passwords do not match!</small
+          >
         </div>
 
-        <button type="submit" class="btn btn-dark" style="width: 100% !important;">Sign up</button>
+        <div *ngIf="errorMessage" class="mb-3" style="color: red; text-align: center">
+          {{ errorMessage }}
+        </div>
+
+        <button type="submit" class="btn btn-dark" style="width: 100% !important">Sign up</button>
       </form>
-
     </div>
   </div>
-
 </div>

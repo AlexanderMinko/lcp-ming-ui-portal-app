@@ -17,12 +17,8 @@ export class CartService {
 
   constructor(private http: HttpClient) {}
 
-  getDeserializedShoppingCart(
-    serializedShoppingCart: string
-  ): Observable<CartItem[]> {
-    return this.http.post<CartItem[]>(
-      this.baseUrl, serializedShoppingCart
-    );
+  getDeserializedShoppingCart(serializedShoppingCart: string): Observable<CartItem[]> {
+    return this.http.post<CartItem[]>(this.baseUrl, serializedShoppingCart);
   }
 
   addToCart(cartItem: CartItem): void {
@@ -46,9 +42,7 @@ export class CartService {
     if (index > -1) {
       this.cartItems.splice(index, 1);
     }
-    this.cartItems.length > 0
-      ? this.setStorage('cartItems')
-      : this.clearStorage('cartItems');
+    this.cartItems.length > 0 ? this.setStorage('cartItems') : this.clearStorage('cartItems');
     this.calculateCartTotals();
   }
 
@@ -60,9 +54,7 @@ export class CartService {
   clearStorage(key: string): void {
     sessionStorage.removeItem(key);
     const allCookies: string[] = document.cookie.split(';');
-    const myCookie: string[] = allCookies.filter((el) =>
-      el.trim().startsWith(key)
-    );
+    const myCookie: string[] = allCookies.filter((el) => el.trim().startsWith(key));
     const cookies: string[] = myCookie[0].trim().split('=');
     if (cookies[0] === key) {
       this.setCookie(key, [], -1);
@@ -84,9 +76,7 @@ export class CartService {
   }
 
   checkStorage(key: string): void {
-    const sessionCartItems: CartItem[] = JSON.parse(
-      sessionStorage.getItem(key)!
-    );
+    const sessionCartItems: CartItem[] = JSON.parse(sessionStorage.getItem(key)!);
     if (sessionCartItems) {
       this.cartItems = sessionCartItems;
       this.calculateCartTotals();
@@ -97,20 +87,16 @@ export class CartService {
 
   getCookie(key: string): void {
     const allCookies: string[] = document.cookie.split(';');
-    const myCookie: string[] = allCookies.filter((cookie) =>
-      cookie.trim().startsWith(key)
-    );
+    const myCookie: string[] = allCookies.filter((cookie) => cookie.trim().startsWith(key));
     const cookies: string[] = myCookie[0]?.trim().split('=');
     if (cookies) {
       const serializedShoppingCart = cookies[1];
       console.log(serializedShoppingCart);
-      this.getDeserializedShoppingCart(serializedShoppingCart).subscribe(
-        (data: CartItem[]) => {
-          this.cartItems = data;
-          this.setStorage('cartItems');
-          this.calculateCartTotals();
-        }
-      );
+      this.getDeserializedShoppingCart(serializedShoppingCart).subscribe((data: CartItem[]) => {
+        this.cartItems = data;
+        this.setStorage('cartItems');
+        this.calculateCartTotals();
+      });
     }
   }
 
@@ -143,13 +129,9 @@ export class CartService {
       const subTotalPrice = cartItem.quantity * cartItem.price;
       console.log(
         `name=${cartItem.name}, quantity=${cartItem.quantity},` +
-          `unitPrice=${cartItem.price}, subTotalPrice=${subTotalPrice.toFixed(
-            2
-          )}`
+          `unitPrice=${cartItem.price}, subTotalPrice=${subTotalPrice.toFixed(2)}`
       );
     }
-    console.log(
-      `totalPrice=${totalPrice.toFixed(2)}, totalQuantity=${totalQuantity}`
-    );
+    console.log(`totalPrice=${totalPrice.toFixed(2)}, totalQuantity=${totalQuantity}`);
   }
 }

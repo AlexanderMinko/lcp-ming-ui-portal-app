@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../service/auth.service';
 import Keycloak from 'keycloak-js';
-import {filter, map, switchMap} from 'rxjs/operators';
-import { OrderResponseDto } from '../../model/models';
+import { filter, switchMap } from 'rxjs/operators';
+import { Account, OrderResponseDto } from '../../model/models';
 import { OrderService } from '../../service/order.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-account-details',
@@ -13,28 +14,30 @@ import { OrderService } from '../../service/order.service';
 export class AccountDetailsComponent implements OnInit {
   isLogged = false;
   userProfile: Keycloak.KeycloakProfile;
+  account: Account;
   orders: OrderResponseDto[] = [];
 
-  constructor(
-    private authService: AuthService,
-    private orderService: OrderService
-  ) {}
+  constructor(private authService: AuthService, private orderService: OrderService) {}
 
   ngOnInit(): void {
+    this.loadFullAccountInfo();
+  }
+
+  loadFullAccountInfo(): void {
     this.authService
-      .isLoggedIn()
+      .loadUserProfile()
       .pipe(
-        filter((isLogged: boolean) => isLogged),
-        switchMap((isLogged: boolean) => {
-          this.isLogged = isLogged;
-          return this.authService.loadUserProfile();
+        switchMap((profile) => {
+          this.userProfile = profile;
+          return forkJoin([
+            this.orderService.getOrdersByAccountId(profile.id),
+            this.authService.getAccount(profile.id),
+          ]);
         })
       )
-      .subscribe((profile) => {
-        this.userProfile = profile;
-        this.orderService
-          .getOrdersByEmail(profile.email)
-          .subscribe((orders) => (this.orders = orders));
+      .subscribe(([orders, account]) => {
+        this.orders = orders;
+        this.account = account;
       });
   }
 }

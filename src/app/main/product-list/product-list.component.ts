@@ -3,6 +3,11 @@ import { CartItem, Product } from '../../model/models';
 import { ProductResponse, ProductService } from '../../service/product.service';
 import { ActivatedRoute } from '@angular/router';
 import { CartService } from '../../service/cart.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AddProductComponent } from './product-bar/add-product/add-product.component';
+import { AddCategoryComponent } from './product-bar/add-category/add-category.component';
+import { AuthService } from '../../service/auth.service';
+import { AddProducerComponent } from './product-bar/add-producer/add-producer.component';
 
 @Component({
   selector: 'app-product-list',
@@ -17,33 +22,38 @@ export class ProductListComponent implements OnInit {
   isPageFullLoaded = false;
   isSearchMode = false;
   isLoggedChange = false;
-  currentCategoryId: string;
-  previousCategoryId: string;
+  currentAttributeId: string;
+  previousAttributeId: string;
   searchWord: string;
   previousSortedParam: string;
+  isLcpAdmin: boolean;
 
   imageBaseUrl = 'http://localhost:9000/ming';
 
   constructor(
     private productService: ProductService,
     private activatedRoute: ActivatedRoute,
-    private cartService: CartService
+    private cartService: CartService,
+    private modalService: NgbModal,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe(() => {
       this.showListProducts();
     });
+    this.productService.productAddedSubject.subscribe(() => {
+      this.showListProducts();
+    });
+    this.isLcpAdmin = this.authService.isLcpAdmin();
   }
 
   showListProducts(): void {
-    const hasSearch: boolean =
-      this.activatedRoute.snapshot.paramMap.has('name');
-    const hasCategoryId: boolean =
-      this.activatedRoute.snapshot.paramMap.has('id');
+    const hasSearch: boolean = this.activatedRoute.snapshot.paramMap.has('name');
+    const hasAttribute: boolean = this.activatedRoute.snapshot.paramMap.has('attribute');
     const sortedParam = this.activatedRoute.snapshot.params.type;
-    if (hasCategoryId) {
-      this.showListProductsByCategory();
+    if (hasAttribute) {
+      this.showListProductsByAttribute();
     } else if (hasSearch) {
       this.showListProductsBySearch();
     } else if (sortedParam) {
@@ -60,34 +70,29 @@ export class ProductListComponent implements OnInit {
       this.isPageFullLoaded = false;
     }
     this.previousSortedParam = sortedParam;
-    this.productService
-      .getProductsSorted(this.page, this.size, sortedParam)
-      .subscribe(this.proceedResult());
+    this.productService.getProductsSorted(this.page, this.size, sortedParam).subscribe(this.proceedResult());
   }
 
   showListProductsBySearch(): void {
     this.searchWord = this.activatedRoute.snapshot.params.name;
-    this.productService
-      .searchProducts(this.page, this.size, this.searchWord)
-      .subscribe(this.proceedResult());
+    this.productService.searchProducts(this.page, this.size, this.searchWord).subscribe(this.proceedResult());
   }
 
-  showListProductsByCategory(): void {
-    this.currentCategoryId = this.activatedRoute.snapshot.params.id;
-    if (this.currentCategoryId !== this.previousCategoryId) {
+  showListProductsByAttribute(): void {
+    const currentAttribute = this.activatedRoute.snapshot.params.attribute;
+    this.currentAttributeId = this.activatedRoute.snapshot.params.id;
+    if (this.currentAttributeId !== this.previousAttributeId) {
       this.size = 12;
       this.isPageFullLoaded = false;
     }
-    this.previousCategoryId = this.currentCategoryId;
+    this.previousAttributeId = this.currentAttributeId;
     this.productService
-      .getProductsByCategory(this.page, this.size, this.currentCategoryId)
+      .getProductsByAttribute(this.page, this.size, currentAttribute, this.currentAttributeId)
       .subscribe(this.proceedResult());
   }
 
   showAllListProducts(): void {
-    this.productService
-      .getProducts(this.page, this.size)
-      .subscribe(this.proceedResult());
+    this.productService.getProducts(this.page, this.size).subscribe(this.proceedResult());
   }
 
   onAddToCart(product: Product): void {
@@ -110,5 +115,26 @@ export class ProductListComponent implements OnInit {
       this.products = data.content;
       this.totalElements = data.totalElements;
     };
+  }
+
+  onOpenAddProductModal(): void {
+    this.modalService.open(AddProductComponent, {
+      size: 'lg',
+      windowClass: 'modal-holder',
+    });
+  }
+
+  onOpenAddCategoryModal(): void {
+    this.modalService.open(AddCategoryComponent, {
+      size: 'lg',
+      windowClass: 'modal-holder',
+    });
+  }
+
+  onOpenAddProducerModal(): void {
+    this.modalService.open(AddProducerComponent, {
+      size: 'lg',
+      windowClass: 'modal-holder',
+    });
   }
 }

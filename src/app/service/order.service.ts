@@ -21,8 +21,8 @@ export class OrderService {
     });
   }
 
-  getOrdersByEmail(email: string | undefined): Observable<OrderResponseDto[]> {
-    return this.http.get<OrderResponseDto[]>(`${this.baseUrl}?email=${email}`);
+  getOrdersByAccountId(accountId: string | undefined): Observable<OrderResponseDto[]> {
+    return this.http.get<OrderResponseDto[]>(`${this.baseUrl}?account_id=${accountId}`);
   }
 
   getOrderItemByOrderId(id: number): Observable<OrderItemResponseDto[]> {
