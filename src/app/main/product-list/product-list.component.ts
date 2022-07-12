@@ -118,10 +118,11 @@ export class ProductListComponent implements OnInit {
   }
 
   onOpenAddProductModal(): void {
-    this.modalService.open(AddProductComponent, {
+    const modalRef = this.modalService.open(AddProductComponent, {
       size: 'lg',
       windowClass: 'modal-holder',
     });
+    modalRef.componentInstance.test = {message: 'text'};
   }
 
   onOpenAddCategoryModal(): void {

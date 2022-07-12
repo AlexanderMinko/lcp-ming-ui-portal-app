@@ -1,14 +1,16 @@
 import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { CartItem, Product, Review, ReviewRequestDto } from '../../model/models';
-import { ProductService } from '../../service/product.service';
+import { CartItem, Product, RemoveVideoParam, Review, ReviewRequestDto } from '../../model/models';
+import { ProductResponse, ProductService } from '../../service/product.service';
 import { CartService } from '../../service/cart.service';
 import { KeycloakService } from 'keycloak-angular';
 import { AuthService } from '../../service/auth.service';
 import Keycloak from 'keycloak-js';
 import { filter, switchMap } from 'rxjs/operators';
 import { ReviewService } from '../../service/review.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { EditProductComponent } from './edit-product/edit-product.component';
 
 @Component({
   selector: 'app-product-details',
@@ -24,7 +26,15 @@ export class ProductDetailsComponent implements OnInit {
   currentReplies: string[] = [];
   currentViewReplies: string[] = [];
   userProfile: Keycloak.KeycloakProfile;
+  uploadProductVideos: FormGroup;
   imageBaseUrl = 'http://localhost:9000/ming';
+  isLcpAdmin: boolean;
+
+  products: Product[] = [];
+  page = 0;
+  size = 12;
+  totalElements = 0;
+  isPageFullLoaded = false;
 
   constructor(
     private productService: ProductService,
@@ -32,11 +42,52 @@ export class ProductDetailsComponent implements OnInit {
     private formBuilder: FormBuilder,
     private cartService: CartService,
     private keycloakService: KeycloakService,
-    private authService: AuthService,
-    private reviewService: ReviewService
+    public authService: AuthService,
+    private reviewService: ReviewService,
+    private modalService: NgbModal
   ) {}
 
   ngOnInit(): void {
+    this.initUserProfile();
+    this.initProductInfo();
+    this.initReviewForm();
+    this.initProductVideosForm();
+    this.showAllListProducts();
+    this.isLcpAdmin = this.authService.isLcpAdmin();
+  }
+
+  showAllListProducts(): void {
+    this.productService.getProducts(this.page, this.size).subscribe(this.proceedResult());
+  }
+
+  private proceedResult(): (data: ProductResponse) => void {
+    return (data: ProductResponse) => {
+      this.products = data.content;
+      this.totalElements = data.totalElements;
+    };
+  }
+
+  private initProductVideosForm(): void {
+    this.uploadProductVideos = this.formBuilder.group({
+      videos: new FormControl(null),
+    });
+  }
+
+  private initProductInfo(): void {
+    this.activatedRoute.params.subscribe(() => {
+      this.productId = this.activatedRoute.snapshot.params.id;
+      this.getProduct();
+      this.getReviews();
+    });
+  }
+
+  private initReviewForm(): void {
+    this.reviewFormGroup = this.formBuilder.group({
+      review: new FormControl(''),
+    });
+  }
+
+  private initUserProfile(): void {
     this.authService
       .isLoggedIn()
       .pipe(
@@ -49,15 +100,6 @@ export class ProductDetailsComponent implements OnInit {
       .subscribe((profile) => {
         this.userProfile = profile;
       });
-
-    this.activatedRoute.params.subscribe(() => {
-      this.productId = this.activatedRoute.snapshot.params.id;
-      this.getProduct();
-      this.getReviews();
-    });
-    this.reviewFormGroup = this.formBuilder.group({
-      review: new FormControl(''),
-    });
   }
 
   get review(): AbstractControl {
@@ -136,5 +178,56 @@ export class ProductDetailsComponent implements OnInit {
   onAddToCart(): void {
     const cartItem: CartItem = new CartItem(this.product);
     this.cartService.addToCart(cartItem);
+  }
+
+  onOpenEditProductModal(): void {
+    this.modalService.open(EditProductComponent, {
+      size: 'lg',
+      windowClass: 'modal-holder',
+    });
+  }
+
+  get videos(): AbstractControl | null {
+    return this.uploadProductVideos.get('videos');
+  }
+
+  onSubmitVideosForm(): void {
+    console.log(this.videos?.value);
+    const files = this.videos?.value as File[];
+    Array.from(files).forEach((file) => {
+      this.productService.uploadProductVideo(this.productId, file).subscribe(() => {
+        console.log(`file: ${file.name} uploaded`);
+        this.getProduct();
+      });
+    });
+    // this.productService.uploadProductVideos(this.productId, this.videos?.value as File[])
+    //   .subscribe(() => {
+    //     console.log('published');
+    //   });
+  }
+
+  onFileChanged(event): void {
+    const files = event.target.files;
+    this.uploadProductVideos.patchValue({
+      videos: files,
+    });
+  }
+
+  onRemove(id: string, name: string): void {
+    const removeVideoParam = {
+      productId: id,
+      videoName: name,
+    } as RemoveVideoParam;
+    this.productService.removeVideo(removeVideoParam).subscribe({ next: () => this.getProduct() });
+  }
+
+  loadMore(): void {
+    if (this.totalElements > this.size) {
+      this.size += 12;
+      this.showAllListProducts();
+      if (this.totalElements < this.size) {
+        this.isPageFullLoaded = true;
+      }
+    }
   }
 }

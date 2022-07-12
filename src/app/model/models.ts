@@ -5,8 +5,17 @@ export interface Product {
   imageUrl: string;
   price: number;
   createdDate: Date;
+  videos: Video[];
   category: Category;
   producer: Producer;
+}
+
+export interface Video {
+  name: string;
+  displayName: string;
+  description: string;
+  url: string;
+  size: number;
 }
 
 export interface Category {
@@ -95,7 +104,7 @@ export interface OrderResponseDto {
   createdDate: Date;
 }
 
-export interface RegistrationRequest {
+export interface CreateAccountParam {
   username: string;
   firstName: string;
   lastName: string;
@@ -122,6 +131,11 @@ export interface CreateProducerParam {
   name: string;
   displayName: string;
   description: string;
+}
+
+export interface RemoveVideoParam {
+  productId: string;
+  videoName: string;
 }
 
 export interface Account {

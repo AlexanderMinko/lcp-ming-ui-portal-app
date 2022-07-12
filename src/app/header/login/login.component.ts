@@ -10,7 +10,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { RegistrationRequest } from '../../model/models';
+import { CreateAccountParam } from '../../model/models';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -22,39 +22,31 @@ import { map } from 'rxjs/operators';
 export class LoginComponent implements OnInit {
   authFormGroup: FormGroup;
   errorMessage: string;
+  url: string | ArrayBuffer | null | undefined = 'assets/images/avatar/BasePhoto.jpg';
 
-  constructor(
-    public activeModal: NgbActiveModal,
-    private authService: AuthService,
-    private formBuilder: FormBuilder
-  ) {}
+  constructor(public activeModal: NgbActiveModal, private authService: AuthService, private formBuilder: FormBuilder) {}
 
   ngOnInit(): void {
-    this.authFormGroup = this.formBuilder.group({
-      username: new FormControl('', [
-        Validators.required,
-        Validators.minLength(2),
-        this.notOnlyWhitespace,
-      ]),
-      firstname: new FormControl('', [
-        Validators.required,
-        Validators.minLength(2),
-        this.notOnlyWhitespace,
-      ]),
-      lastname: new FormControl('', [
-        Validators.required,
-        Validators.minLength(2),
-        this.notOnlyWhitespace,
-      ]),
-      email: new FormControl('', [
-        Validators.required,
-        Validators.pattern('[a-z0-9._-]+@[a-z0-9.-]+\\.[a-z]{2,4}'),
-      ]),
-      password: new FormControl('', [
-        Validators.required,
-        Validators.minLength(3),
-      ]),
-    });
+    this.authFormGroup = this.formBuilder.group(
+      {
+        username: new FormControl(
+          '',
+          [Validators.required, Validators.minLength(2), this.notOnlyWhitespace],
+          this.fieldValidator('username')
+        ),
+        firstname: new FormControl('', [Validators.required, Validators.minLength(2), this.notOnlyWhitespace]),
+        lastname: new FormControl('', [Validators.required, Validators.minLength(2), this.notOnlyWhitespace]),
+        email: new FormControl(
+          '',
+          [Validators.required, Validators.pattern('[a-z0-9._-]+@[a-z0-9.-]+\\.[a-z]{2,4}')],
+          this.fieldValidator('email')
+        ),
+        password: new FormControl('', [Validators.required, Validators.minLength(3)]),
+        confirmPassword: new FormControl('', [Validators.required, Validators.minLength(3)]),
+        image: new FormControl(''),
+      },
+      { validators: this.checkPasswordMatch }
+    );
   }
 
   notOnlyWhitespace(control: FormControl): ValidationErrors | null {
@@ -99,6 +91,9 @@ export class LoginComponent implements OnInit {
   get confirmPassword(): AbstractControl | null {
     return this.authFormGroup.get('confirmPassword');
   }
+  get image(): AbstractControl | null {
+    return this.authFormGroup.get('image');
+  }
 
   onSubmit(): void {
     this.registration();
@@ -108,16 +103,28 @@ export class LoginComponent implements OnInit {
     if (this.authFormGroup.invalid) {
       this.authFormGroup.markAllAsTouched();
     } else {
-      const registrationRequest = {
+      const createAccountParam = {
         username: this.username?.value,
         firstName: this.firstname?.value,
         lastName: this.lastname?.value,
         email: this.email?.value,
         password: this.password?.value,
-      } as RegistrationRequest;
-      this.authService.customRegistrationAccount(registrationRequest).subscribe((data) => {
+      } as CreateAccountParam;
+      this.authService.customRegistrationAccount(createAccountParam, this.image?.value).subscribe(() => {
         this.activeModal.dismiss('Cross click');
       });
     }
+  }
+
+  onFileChanged(event): void {
+    const input = event.target.files[0];
+    this.authFormGroup.patchValue({
+      image: input,
+    });
+    const reader = new FileReader();
+    reader.readAsDataURL(event.target.files[0]);
+    reader.onload = (readerEvent) => {
+      this.url = readerEvent?.target?.result;
+    };
   }
 }

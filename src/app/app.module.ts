@@ -26,6 +26,7 @@ import { AccountManagementComponent } from './main/admin-panel/account-managemen
 import { AddProducerComponent } from './main/product-list/product-bar/add-producer/add-producer.component';
 import { AddCategoryComponent } from './main/product-list/product-bar/add-category/add-category.component';
 import { AddProductComponent } from './main/product-list/product-bar/add-product/add-product.component';
+import { EditProductComponent } from './main/product-details/edit-product/edit-product.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { AddProductComponent } from './main/product-list/product-bar/add-product
     AddProducerComponent,
     AddCategoryComponent,
     AddProductComponent,
+    EditProductComponent,
   ],
   imports: [
     BrowserModule,

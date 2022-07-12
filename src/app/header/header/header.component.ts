@@ -5,7 +5,6 @@ import Keycloak from 'keycloak-js';
 import { filter, switchMap } from 'rxjs/operators';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { LoginComponent } from '../login/login.component';
-import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-header',
@@ -13,9 +12,9 @@ import { forkJoin } from 'rxjs';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
-  isLogged = false;
   userProfile: Keycloak.KeycloakProfile;
   isLcpAdmin: boolean;
+  photoUrl: string;
 
   constructor(
     private keycloak: KeycloakService,
@@ -25,16 +24,15 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService
-      .isLoggedIn()
+      .getCurrentUserProfile()
       .pipe(
-        filter((isLogged: boolean) => isLogged),
-        switchMap((isLogged: boolean) => {
-          this.isLogged = isLogged;
-          return this.authService.loadUserProfile();
+        switchMap((profile) => {
+          this.userProfile = profile;
+          return this.authService.getAccountPhotoUrl(profile.id);
         })
       )
-      .subscribe((profile) => {
-        this.userProfile = profile;
+      .subscribe((url) => {
+        this.photoUrl = url.photo;
       });
     this.isLcpAdmin = this.authService.isLcpAdmin();
   }

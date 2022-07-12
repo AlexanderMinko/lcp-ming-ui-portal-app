@@ -1,75 +1,70 @@
 <div class="container-fluid">
   <div class="row">
-    <div class="col-7">
-      <h3>About product</h3>
+    <div class="col-8">
+      <div class="input-group">
+        <h3>About product</h3>
+        <button *ngIf="authService.isLcpAdmin()" (click)="onOpenEditProductModal()" class="btn btn-dark ml-2">
+          <i class="far fa-edit"></i> Edit
+        </button>
+        <button *ngIf="authService.isLcpAdmin()" class="btn btn-danger ml-2">
+          <i class="fas fa-trash-alt"></i> Delete
+        </button>
+      </div>
       <hr />
-      <img
-        src="{{ product?.imageUrl }}"
-        height="500"
-        width="650"
-        class="datail-image"
-      />
+
+      <img src="{{ product?.imageUrl }}" height="500" width="650" class="detail-image" />
       <h3>{{ product?.name }}</h3>
       <div>
-        <strong>{{ product?.price | currency: "USD" }}</strong>
+        <strong>{{ product?.price | currency: 'USD' }}</strong>
       </div>
-      <button (click)="onAddToCart()" class="btn btn-dark mt-2">
-        Add to cart
-      </button>
+      <button (click)="onAddToCart()" class="btn btn-dark mt-2">Add to cart</button>
       <hr />
       <h4>Description</h4>
       <p>{{ product?.description }}</p>
       <hr />
-      <h4>Video Overview</h4>
-      <video controls class="mr-1 mb-1" style="width: 50%">
-        <source
-          src="http://localhost:9000/testbucket/Juice%20WRLD%20-%20Conversations%20%28Skeler%20Remix%29.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=testadmin%2F20220612%2F%2Fs3%2Faws4_request&X-Amz-Date=20220612T052949Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=e16a2a38811f0050d706294c60ac2cab79da70ed03a876a04bed4d2c3e9d697d"
-          type="video/mp4"
-        />
-        Your browser does not support HTML video.
-      </video>
-      <div class="mb-2">
-        <a routerLink="/products" class="btn btn-outline-dark">
-          <i class="fas fa-arrow-left"></i> Back</a>
+      <h4 *ngIf="product?.videos">Video Overview</h4>
+      <form
+        [formGroup]="uploadProductVideos"
+        (ngSubmit)="onSubmitVideosForm()"
+        *ngIf="authService.isLcpAdmin()"
+        class="mb-3"
+      >
+        <div class="input-group">
+          <input type="file" (change)="onFileChanged($event)" class="form-control" id="image" [multiple]="videos" />
+          <button type="submit" class="btn btn-outline-dark">Add videos</button>
+        </div>
+      </form>
+
+      <div *ngFor="let video of product?.videos" style="margin-bottom: 50px">
+        <p>{{ video.displayName }}</p>
+        <button class="btn btn-danger" (click)="onRemove(product.id, video.name)">
+          <i class="fas fa-trash-alt"></i> Remove
+        </button>
+        <video controls style="width: 100%">
+          <source src="{{ imageBaseUrl + video.url }}" type="video/mp4" />
+          Your browser does not support HTML video.
+        </video>
       </div>
-    </div>
-    <div class="col-5">
+
+      <!--    REVIEWS-->
       <h3>Reviews</h3>
       <hr />
 
       <ng-template #elseTemplate>
-        <div class="alert alert-warning" role="alert">
-          To leave review, please sign in
-        </div>
+        <div class="alert alert-warning" role="alert">To leave review, please sign in</div>
       </ng-template>
 
-      <form
-        *ngIf="isLogged; else elseTemplate"
-        [formGroup]="reviewFormGroup"
-        (ngSubmit)="onSubmit()"
-      >
+      <form *ngIf="isLogged; else elseTemplate" [formGroup]="reviewFormGroup" (ngSubmit)="onSubmit()">
         <div class="form-group">
           <label for="review">Leave your review</label>
-          <textarea
-            formControlName="review"
-            class="form-control"
-            id="review"
-            rows="3"
-          ></textarea>
+          <textarea formControlName="review" class="form-control" id="review" rows="3"></textarea>
         </div>
-        <button type="submit" class="btn btn-dark" style="width: 100%">
-          Sumbit
-        </button>
+        <button type="submit" class="btn btn-dark" style="width: 100%">Sumbit</button>
       </form>
 
       <div *ngFor="let review of reviews">
         <div class="card mb-3 mt-3">
           <div class="card-header">
-            <img
-              [src]="review.reviewerPhotoUrl"
-              height="30px"
-              class="rounded-circle"
-            />
             {{ review.reviewerFirstName }} {{ review.reviewerLastName }}
             <span style="float: right"> {{ review.duration }}</span>
           </div>
@@ -77,13 +72,7 @@
           <div class="card-body">
             {{ review.content }}
             <hr />
-            <button
-              *ngIf="isLogged"
-              (click)="onReplies(review.id)"
-              class="btn btn-light btn-sm mr-3"
-            >
-              Reply
-            </button>
+            <button *ngIf="isLogged" (click)="onReplies(review.id)" class="btn btn-light btn-sm mr-3">Reply</button>
             <button
               *ngIf="review?.childrenReviews && review.childrenReviews?.length"
               type="button"
@@ -98,17 +87,9 @@
         <div *ngIf="currentReplies.includes(review.id)" class="row">
           <div class="col-1"></div>
           <div class="col-11 input-group mb-1">
-            <input
-              #Reply
-              type="text"
-              class="form-control"
-              placeholder="Enter your answer..."
-            />
+            <input #Reply type="text" class="form-control" placeholder="Enter your answer..." />
             <div class="input-group-append">
-              <button
-                (click)="onSubmitReply(Reply.value, review.id)"
-                class="btn btn-outline-secondary btn-sm"
-              >
+              <button (click)="onSubmitReply(Reply.value, review.id)" class="btn btn-outline-secondary btn-sm">
                 Reply
               </button>
             </div>
@@ -121,11 +102,6 @@
             <div class="col-11 mb-1">
               <div class="card" style="font-size: 14px">
                 <div class="card-header">
-                  <img
-                    [src]="subReview.reviewerPhotoUrl"
-                    height="20px"
-                    class="rounded-circle"
-                  />
                   {{ subReview.reviewerFirstName }}
                   {{ subReview.reviewerLastName }}
                   <span style="float: right"> {{ subReview.duration }}</span>
@@ -139,5 +115,42 @@
         </div>
       </div>
     </div>
+
+    <div class="col-4" style="padding: 0 70px 0 70px">
+      <h3>See also</h3>
+      <div class="alert alert-warning" *ngIf="!products.length">
+        <strong>Warning! </strong> There is no products loaded!
+      </div>
+
+      <div *ngFor="let product of products">
+        <div class="card product">
+          <div class="card-body">
+            <a routerLink="/product-details/{{ product.id }}">
+              <div class="img-thumbnail">
+                <img class="img-fluid" [src]="imageBaseUrl + product.imageUrl" alt="notebook" />
+              </div>
+            </a>
+            <div class="name mt-1">{{ product.name }}</div>
+            <div class="code">Code: {{ product.id.slice(0, 3) }}</div>
+            <div class="price">{{ product.price | currency: 'USD' }}</div>
+            <ul class="list-group">
+              <li class="list-group-item">
+                <small>Category:</small>
+                <span class="category"> {{ product?.category?.name }} </span>
+              </li>
+              <li class="list-group-item">
+                <small>Producer:</small>
+                <span class="producer"> {{ product?.producer?.name }} </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="products.length > 0 && !isPageFullLoaded" class="text-center hidden-print mb-4">
+        <button (click)="loadMore()" id="loadMore" class="btn btn-dark">Load more products</button>
+      </div>
+    </div>
+
   </div>
 </div>

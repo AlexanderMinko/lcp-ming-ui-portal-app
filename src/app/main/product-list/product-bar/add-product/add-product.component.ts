@@ -1,10 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import {
-  Category,
-  CreateProductParam,
-  Producer,
-} from '../../../../model/models';
+import { Category, CreateProductParam, Producer } from '../../../../model/models';
 import { ProductService } from '../../../../service/product.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
@@ -14,10 +10,13 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./add-product.component.css'],
 })
 export class AddProductComponent implements OnInit {
+
+  @Input() public test;
+
   createProductGroup: FormGroup;
   categories: Category[] = [];
   producers: Producer[] = [];
-  url;
+  url: string | ArrayBuffer | null | undefined;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -26,6 +25,17 @@ export class AddProductComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log(this.test);
+    this.initCreateProductGroup();
+    this.productService.getCategories().subscribe((categories) => {
+      this.categories = categories;
+    });
+    this.productService.getProducers().subscribe((producers) => {
+      this.producers = producers;
+    });
+  }
+
+  private initCreateProductGroup(): void {
     this.createProductGroup = this.formBuilder.group({
       name: new FormControl(''),
       description: new FormControl(''),
@@ -33,12 +43,6 @@ export class AddProductComponent implements OnInit {
       category: new FormControl(''),
       producer: new FormControl(''),
       image: new FormControl(''),
-    });
-    this.productService.getCategories().subscribe((categories) => {
-      this.categories.push(...categories);
-    });
-    this.productService.getProducers().subscribe((producers) => {
-      this.producers.push(...producers);
     });
   }
 
@@ -50,12 +54,10 @@ export class AddProductComponent implements OnInit {
       category: this.productCategory,
       producer: this.productProducer,
     } as CreateProductParam;
-    this.productService
-      .createProduct(createProductParam, this.image)
-      .subscribe((addedProduct) => {
-        this.activeModal.dismiss('Cross click');
-        this.productService.productAddedSubject.next(addedProduct);
-      });
+    this.productService.createProduct(createProductParam, this.image).subscribe((addedProduct) => {
+      this.activeModal.dismiss('Cross click');
+      this.productService.productAddedSubject.next(addedProduct);
+    });
   }
 
   get image(): File {

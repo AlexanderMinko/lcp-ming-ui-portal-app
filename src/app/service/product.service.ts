@@ -8,6 +8,7 @@ import {
   CreateProductParam,
   Producer,
   Product,
+  RemoveVideoParam,
 } from '../model/models';
 
 const FORM_DATA_JSON = 'application/json';
@@ -60,6 +61,24 @@ export class ProductService {
     formData.append('createParamJson', new Blob([JSON.stringify(createProductParam)], { type: FORM_DATA_JSON }));
     formData.append('imageFile', image, image.name);
     return this.http.post<Product>(`${this.baseUrl}`, formData);
+  }
+
+  uploadProductVideos(id: string, files: File[]): Observable<void> {
+    const formData = new FormData();
+    Array.from(files).forEach((file) => {
+      formData.append('videoFile', file, file.name);
+    });
+    return this.http.post<void>(`${this.baseUrl}/${id}/videos`, formData);
+  }
+
+  uploadProductVideo(id: string, file: File): Observable<void> {
+    const formData = new FormData();
+    formData.append('videoFile', file, file.name);
+    return this.http.post<void>(`${this.baseUrl}/${id}/video`, formData);
+  }
+
+  removeVideo(removeVideoParam: RemoveVideoParam): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${removeVideoParam.productId}/video/${removeVideoParam.videoName}`);
   }
 
   getCategories(): Observable<Category[]> {

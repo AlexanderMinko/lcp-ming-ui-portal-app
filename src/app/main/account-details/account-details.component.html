@@ -3,6 +3,23 @@
     <h4>Account info</h4>
     <hr />
 
+    <form [formGroup]="updateAccountFormGroup" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <div class="row">
+          <div class="col-2">
+            <img src="{{ photoUrl }}" height="120" />
+          </div>
+          <div class="col-7">
+            <label for="image">Update photo</label>
+            <input type="file" (change)="onFileChanged($event)" class="form-control" id="image"/>
+          </div>
+          <div class="col-2">
+            <button type="submit" class="btn btn-danger mt-4" >Update</button>
+          </div>
+        </div>
+      </div>
+    </form>
+
     <div class="mt-2">
       <label>ID:</label>
       <p style="font-size: 22px">{{ userProfile?.id }}</p>
