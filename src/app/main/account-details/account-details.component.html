@@ -1,77 +1,14 @@
 <div class="row">
-  <div class="col-6">
-    <h4>Account info</h4>
-    <hr />
-
-    <form [formGroup]="updateAccountFormGroup" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <div class="row">
-          <div class="col-2">
-            <img src="{{ photoUrl }}" height="120" />
-          </div>
-          <div class="col-7">
-            <label for="image">Update photo</label>
-            <input type="file" (change)="onFileChanged($event)" class="form-control" id="image"/>
-          </div>
-          <div class="col-2">
-            <button type="submit" class="btn btn-danger mt-4" >Update</button>
-          </div>
-        </div>
+  <div class="col-2">
+    <div class="card mb-3">
+      <div class="card-header"><i class="fas fa-list"></i> Options</div>
+      <div class="list-group" style="border-radius: 0%">
+        <a routerLink="account-info" routerLinkActive="active" class="list-group-item list-group-item-action">Account Info</a>
+        <a routerLink="account-orders" routerLinkActive="active" class="list-group-item list-group-item-action">Account Orders</a>
       </div>
-    </form>
-
-    <div class="mt-2">
-      <label>ID:</label>
-      <p style="font-size: 22px">{{ userProfile?.id }}</p>
-    </div>
-
-    <div class="mt-2">
-      <label>First Name:</label>
-      <p style="font-size: 22px">{{ userProfile?.firstName }}</p>
-    </div>
-
-    <div class="mt-4">
-      <label>Last Name:</label>
-      <p style="font-size: 22px">{{ userProfile?.lastName }}</p>
-    </div>
-
-    <div class="mt-4">
-      <label>Email:</label>
-      <p style="font-size: 22px">{{ userProfile?.email }}</p>
-    </div>
-
-    <div class="mt-4">
-      <label>Status:</label>
-      <p style="font-size: 22px">{{ account?.accountStatus }}</p>
-    </div>
-
-    <div class="mt-4">
-      <label>Realm:</label>
-      <p style="font-size: 22px">{{ account?.realmName }}</p>
     </div>
   </div>
-
-  <div class="col-6">
-    <h4>Orders</h4>
-    <hr />
-    <ng-template #noOrders>
-      <div class="alert alert-warning" role="alert">You have no orders!</div>
-    </ng-template>
-    <table *ngIf="orders.length > 0; else noOrders" class="table table-bordered">
-      <thead>
-        <tr>
-          <th width="10%">ID</th>
-          <th width="90%">Created time</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let order of orders">
-          <td>{{ order.id.slice(0, 8) }}</td>
-          <td>
-            <a routerLink="/order-details/{{ order.id }}">{{ order.createdDate | date: 'y MMMM d, HH:mm' }}</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="col-8">
+    <router-outlet></router-outlet>
   </div>
 </div>

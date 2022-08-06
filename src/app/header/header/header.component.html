@@ -5,7 +5,7 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item" *ngIf="isLcpAdmin">
-        <a routerLink="/admin-panel" class="nav-link">Admin Panel</a>
+        <a routerLink="/admin-panel/account-management" class="nav-link">Admin Panel</a>
       </li>
       <li class="nav-item">
         <a routerLink="/messenger" class="nav-link">Messenger</a>
@@ -14,7 +14,7 @@
 
     <ul class="navbar-nav ml-auto" *ngIf="userProfile">
       <li class="nav-item disabled">
-        <a class="nav-link" routerLink="/account-details" routerLinkActive="active">
+        <a class="nav-link" routerLink="/account-details/account-info">
           {{ userProfile.firstName }} {{ userProfile.lastName }} ({{ userProfile.email }})
         </a>
       </li>

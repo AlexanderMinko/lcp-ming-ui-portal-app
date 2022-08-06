@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CartService } from './service/cart.service';
-import { Router } from '@angular/router';
+import { Environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -9,9 +9,9 @@ import { Router } from '@angular/router';
 })
 export class AppComponent implements OnInit {
   constructor(private cartService: CartService) {}
+  testUrl = Environment.keycloakUrl;
 
   ngOnInit(): void {
     this.cartService.checkStorage('cartItems');
   }
-
 }

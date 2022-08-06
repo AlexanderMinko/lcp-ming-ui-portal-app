@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+  angular:
+    build:
+      context: ./
+#    image: lcp-ming-ui-portal-app:v1
+    container_name: angular_app
+    environment:
+      KEYCLOAK_URL: 'http://localhost:8080/auth'
+      PRODUCT_SERVICE_URL: 'http://localhost:8090'
+
+    ports:
+      - "4200:80"
+#
+#networks:
+#  default:
+#    name: socket

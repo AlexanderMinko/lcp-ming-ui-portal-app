@@ -1,1 +1,55 @@
-<p>account-management works!</p>
+<div class="card mb-3" style="width: 50%">
+  <div class="card-header"><i class="fas fa-search"></i> Find</div>
+  <div class="input-group">
+    <input
+      #searchInput
+      (keyup.enter)="doSearch(searchInput.value)"
+      type="text"
+      class="form-control"
+      placeholder="Search query..."
+    />
+    <div class="input-group-append">
+      <button (click)="doSearch(searchInput.value)" class="btn btn-outline-secondary" type="button">Search!</button>
+    </div>
+  </div>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th width="25%">Username</th>
+      <th width="20%">First Name</th>
+      <th width="20%">Last Name</th>
+      <th width="25%">Email</th>
+      <th width="10%">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let account of accounts" routerLink="/{{ account.username }}}" style="cursor: pointer">
+      <td>
+        <p>{{ account.username }}</p>
+      </td>
+      <td>
+        <p>{{ account.firstName }}</p>
+      </td>
+      <td>
+        <p>{{ account.lastName }}</p>
+      </td>
+      <td>
+        <p>{{ account.email }}</p>
+      </td>
+      <td>
+        <p>{{ account.accountStatus }}</p>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<div style="position: fixed; bottom: 60px; width: 70%; display: flex; justify-content: center">
+  <ngb-pagination
+    [(page)]="page"
+    [pageSize]="size"
+    [collectionSize]="totalElements"
+    [maxSize]="5"
+    [boundaryLinks]="true"
+    (pageChange)="getAccounts()">
+  </ngb-pagination>
+</div>

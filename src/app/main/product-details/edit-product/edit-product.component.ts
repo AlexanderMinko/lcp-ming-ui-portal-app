@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ProductService } from '../../../service/product.service';
-import { Category, CreateProductParam, Producer } from '../../../model/models';
+import { Category, Producer, Product, UpdateProductParam } from '../../../model/models';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -10,9 +10,11 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./edit-product.component.css'],
 })
 export class EditProductComponent implements OnInit {
+  @Input() product: Product;
   updateProductGroup: FormGroup;
   categories: Category[] = [];
   producers: Producer[] = [];
+  url: string | ArrayBuffer | null | undefined;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -28,30 +30,32 @@ export class EditProductComponent implements OnInit {
     this.productService.getProducers().subscribe((producers) => {
       this.producers = producers;
     });
+    this.url = this.product.imageUrl;
   }
 
   private initUpdateProductGroup(): void {
     this.updateProductGroup = this.formBuilder.group({
-      name: new FormControl(''),
-      description: new FormControl(''),
-      price: new FormControl(''),
-      category: new FormControl(''),
-      producer: new FormControl(''),
-      image: new FormControl(''),
+      name: new FormControl(this.product.name),
+      description: new FormControl(this.product.description),
+      price: new FormControl(this.product.price),
+      category: new FormControl(this.product.category.id),
+      producer: new FormControl(this.product.producer.id),
+      image: new FormControl(),
     });
   }
 
-  onSubmitProduct(): void {
+  onSubmit(): void {
     const updateProductGroup = {
+      id: this.product.id,
       name: this.productName,
       description: this.productDescription,
       price: this.productPrice,
       category: this.productCategory,
       producer: this.productProducer,
-    } as CreateProductParam;
-    this.productService.createProduct(updateProductGroup, this.image).subscribe((updatedProduct) => {
+    } as UpdateProductParam;
+    this.productService.updateProduct(updateProductGroup, this.image).subscribe((updatedProduct) => {
       this.activeModal.dismiss('Cross click');
-      this.productService.productAddedSubject.next(updatedProduct);
+      this.productService.productEditedSubject.next(updatedProduct);
     });
   }
 
@@ -77,5 +81,17 @@ export class EditProductComponent implements OnInit {
 
   get productProducer(): string {
     return this.updateProductGroup.get('producer')?.value;
+  }
+
+  onFileChanged(event: Event): void {
+    const files: FileList = (event.target as HTMLInputElement).files as FileList;
+    this.updateProductGroup.patchValue({
+      image: files[0],
+    });
+    const reader = new FileReader();
+    reader.readAsDataURL(files[0]);
+    reader.onload = (readerEvent) => {
+      this.url = readerEvent?.target?.result;
+    };
   }
 }

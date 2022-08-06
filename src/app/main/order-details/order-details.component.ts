@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { OrderItemResponseDto } from '../../model/models';
 import { ActivatedRoute } from '@angular/router';
 import { OrderService } from '../../service/order.service';
+import { Environment } from '../../../environments/environment';
+import { IMAGE_BASE_URL } from '../../constants';
 
 @Component({
   selector: 'app-order-details',
@@ -13,8 +15,7 @@ export class OrderDetailsComponent implements OnInit {
   orderId: number;
   totalCost = 0;
   totalCount = 0;
-
-  imageBaseUrl = 'http://localhost:9000/ming';
+  bucketUrl = IMAGE_BASE_URL + '/ming';
 
   constructor(private orderService: OrderService, private activatedRoute: ActivatedRoute) {}
 

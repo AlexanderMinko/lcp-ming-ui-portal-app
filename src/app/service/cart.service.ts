@@ -2,12 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { CartItem } from '../model/models';
+import { Environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartService {
-  private baseUrl = 'http://localhost:8090/cart';
+  private readonly apiUrl = Environment.production ? Environment.apiUrl : Environment.productServiceUrl;
+  private readonly baseUrl = this.apiUrl + '/product-service/cart';
 
   cartItems: CartItem[] = [];
   totalPriceChange: Subject<number> = new Subject<number>();

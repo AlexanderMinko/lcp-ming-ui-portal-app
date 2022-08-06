@@ -1,8 +1,8 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { Category, CreateProductParam, Producer } from '../../../../model/models';
-import { ProductService } from '../../../../service/product.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Category, CreateProductParam, Producer } from '../../../../../model/models';
+import { ProductService } from '../../../../../service/product.service';
 
 @Component({
   selector: 'app-add-product',
@@ -10,8 +10,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./add-product.component.css'],
 })
 export class AddProductComponent implements OnInit {
-
-  @Input() public test;
+  // @Input() public test;
 
   createProductGroup: FormGroup;
   categories: Category[] = [];
@@ -25,7 +24,7 @@ export class AddProductComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.test);
+    // console.log(this.test);
     this.initCreateProductGroup();
     this.productService.getCategories().subscribe((categories) => {
       this.categories = categories;
@@ -84,14 +83,13 @@ export class AddProductComponent implements OnInit {
     return this.createProductGroup.get('producer')?.value;
   }
 
-  onFileChanged(event): void {
-    const input = event.target.files[0];
+  onFileChanged(event: Event): void {
+    const files: FileList = (event.target as HTMLInputElement).files as FileList;
     this.createProductGroup.patchValue({
-      image: input,
+      image: files[0],
     });
-    this.url = event.target.result;
     const reader = new FileReader();
-    reader.readAsDataURL(event.target.files[0]);
+    reader.readAsDataURL(files[0]);
     reader.onload = (readerEvent) => {
       this.url = readerEvent?.target?.result;
     };

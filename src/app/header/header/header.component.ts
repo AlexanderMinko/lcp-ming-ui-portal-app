@@ -38,11 +38,11 @@ export class HeaderComponent implements OnInit {
   }
 
   onSignIn(): void {
-    this.keycloak.login();
+    this.authService.login();
   }
 
   onSignOut(): void {
-    this.keycloak.logout('http://localhost:4200');
+    this.authService.logOut().subscribe();
   }
 
   onSignUp(): void {

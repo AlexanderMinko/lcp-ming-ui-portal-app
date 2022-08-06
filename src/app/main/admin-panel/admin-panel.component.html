@@ -1,34 +1,21 @@
 <div class="container-fluid content">
   <div class="row">
     <div class="col-2">
-      <div class="list-group">
-        <a
-          routerLink="product-management"
-          routerLinkActive="active"
-          class="list-group-item list-group-item-action"
-          aria-current="true"
-        >
-          Product management
-        </a>
-        <a
-          routerLink="account-management"
-          routerLinkActive="active"
-          class="list-group-item list-group-item-action"
-        >
-          Account management
-        </a>
+      <div class="card mb-3">
+        <div class="card-header"><i class="fas fa-list"></i> Channels</div>
+        <div class="list-group">
+          <a
+            routerLink="account-management"
+            routerLinkActive="active"
+            class="list-group-item list-group-item-action"
+          >
+            Account management
+          </a>
+        </div>
       </div>
     </div>
     <div class="col-10">
       <router-outlet></router-outlet>
-
-      <!--      <img src="http://localhost:9000/ming/3exLa2o8NyE.jpg">-->
-      <!--      <img src="http://localhost:9000/testbucket/60578360.jpeg">-->
-      <!--      <video crossorigin preload="auto" src="http://localhost:9000/testbucket/chat_demo.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=testadmin%2F20220612%2F%2Fs3%2Faws4_request&X-Amz-Date=20220612T045156Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=d3e7656a1aebc425abf1d660842a145c632fdd7007626a08300bf9d5fc0cb8f2"></video>-->
-      <!--      <video width="400" controls>-->
-      <!--        <source src="http://localhost:9000/testbucket/Juice%20WRLD%20-%20Conversations%20%28Skeler%20Remix%29.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=testadmin%2F20220612%2F%2Fs3%2Faws4_request&X-Amz-Date=20220612T052949Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=e16a2a38811f0050d706294c60ac2cab79da70ed03a876a04bed4d2c3e9d697d" type="video/mp4">-->
-      <!--        Your browser does not support HTML video.-->
-      <!--      </video>-->
     </div>
   </div>
 </div>

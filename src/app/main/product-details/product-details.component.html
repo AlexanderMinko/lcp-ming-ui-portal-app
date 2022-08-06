@@ -6,13 +6,13 @@
         <button *ngIf="authService.isLcpAdmin()" (click)="onOpenEditProductModal()" class="btn btn-dark ml-2">
           <i class="far fa-edit"></i> Edit
         </button>
-        <button *ngIf="authService.isLcpAdmin()" class="btn btn-danger ml-2">
+        <button *ngIf="authService.isLcpAdmin()" (click)="onOpenDeleteProductModal()" class="btn btn-danger ml-2">
           <i class="fas fa-trash-alt"></i> Delete
         </button>
       </div>
       <hr />
 
-      <img src="{{ product?.imageUrl }}" height="500" width="650" class="detail-image" />
+      <img src="{{ bucketUrl + product?.imageUrl }}" height="500" width="650" class="detail-image" />
       <h3>{{ product?.name }}</h3>
       <div>
         <strong>{{ product?.price | currency: 'USD' }}</strong>
@@ -37,11 +37,11 @@
 
       <div *ngFor="let video of product?.videos" style="margin-bottom: 50px">
         <p>{{ video.displayName }}</p>
-        <button class="btn btn-danger" (click)="onRemove(product.id, video.name)">
+        <button class="btn btn-danger" (click)="onRemoveVideo(product.id, video.name)">
           <i class="fas fa-trash-alt"></i> Remove
         </button>
         <video controls style="width: 100%">
-          <source src="{{ imageBaseUrl + video.url }}" type="video/mp4" />
+          <source src="{{ bucketUrl + video.url }}" type="video/mp4" />
           Your browser does not support HTML video.
         </video>
       </div>
@@ -116,41 +116,9 @@
       </div>
     </div>
 
-    <div class="col-4" style="padding: 0 70px 0 70px">
+    <div class="col-4" style="padding-left: 70px">
       <h3>See also</h3>
-      <div class="alert alert-warning" *ngIf="!products.length">
-        <strong>Warning! </strong> There is no products loaded!
-      </div>
-
-      <div *ngFor="let product of products">
-        <div class="card product">
-          <div class="card-body">
-            <a routerLink="/product-details/{{ product.id }}">
-              <div class="img-thumbnail">
-                <img class="img-fluid" [src]="imageBaseUrl + product.imageUrl" alt="notebook" />
-              </div>
-            </a>
-            <div class="name mt-1">{{ product.name }}</div>
-            <div class="code">Code: {{ product.id.slice(0, 3) }}</div>
-            <div class="price">{{ product.price | currency: 'USD' }}</div>
-            <ul class="list-group">
-              <li class="list-group-item">
-                <small>Category:</small>
-                <span class="category"> {{ product?.category?.name }} </span>
-              </li>
-              <li class="list-group-item">
-                <small>Producer:</small>
-                <span class="producer"> {{ product?.producer?.name }} </span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div *ngIf="products.length > 0 && !isPageFullLoaded" class="text-center hidden-print mb-4">
-        <button (click)="loadMore()" id="loadMore" class="btn btn-dark">Load more products</button>
-      </div>
+      <app-product-list></app-product-list>
     </div>
-
   </div>
 </div>

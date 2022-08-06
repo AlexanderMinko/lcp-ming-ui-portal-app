@@ -1,13 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { CartItem, Product } from '../../model/models';
-import { ProductResponse, ProductService } from '../../service/product.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { CartItem, Product } from '../../../model/models';
+import { ProductResponse, ProductService } from '../../../service/product.service';
 import { ActivatedRoute } from '@angular/router';
-import { CartService } from '../../service/cart.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AddProductComponent } from './product-bar/add-product/add-product.component';
-import { AddCategoryComponent } from './product-bar/add-category/add-category.component';
-import { AuthService } from '../../service/auth.service';
-import { AddProducerComponent } from './product-bar/add-producer/add-producer.component';
+import { CartService } from '../../../service/cart.service';
+import { Environment } from '../../../../environments/environment';
+import { IMAGE_BASE_URL } from '../../../constants';
 
 @Component({
   selector: 'app-product-list',
@@ -15,28 +12,28 @@ import { AddProducerComponent } from './product-bar/add-producer/add-producer.co
   styleUrls: ['./product-list.component.css'],
 })
 export class ProductListComponent implements OnInit {
+  @Input() rawClass: string;
+  selectedAttribute: string;
+  selectedAttributeId: string;
   products: Product[] = [];
-  page = 0;
-  size = 12;
+  page: number = 0;
+  size: number = 12;
   totalElements = 0;
   isPageFullLoaded = false;
   isSearchMode = false;
-  isLoggedChange = false;
   currentAttributeId: string;
   previousAttributeId: string;
   searchWord: string;
   previousSortedParam: string;
-  isLcpAdmin: boolean;
-
-  imageBaseUrl = 'http://localhost:9000/ming';
+  bucketUrl = IMAGE_BASE_URL + '/ming';
+  position: string;
 
   constructor(
     private productService: ProductService,
     private activatedRoute: ActivatedRoute,
-    private cartService: CartService,
-    private modalService: NgbModal,
-    private authService: AuthService
-  ) {}
+    private cartService: CartService
+  ) {
+  }
 
   ngOnInit(): void {
     this.activatedRoute.params.subscribe(() => {
@@ -45,7 +42,11 @@ export class ProductListComponent implements OnInit {
     this.productService.productAddedSubject.subscribe(() => {
       this.showListProducts();
     });
-    this.isLcpAdmin = this.authService.isLcpAdmin();
+    this.productService.productCategory$.subscribe((categoryId: string) => {
+      this.selectedAttribute = 'category_id';
+      this.selectedAttributeId = categoryId;
+      this.showListProductsByAttribute();
+    });
   }
 
   showListProducts(): void {
@@ -79,8 +80,14 @@ export class ProductListComponent implements OnInit {
   }
 
   showListProductsByAttribute(): void {
-    const currentAttribute = this.activatedRoute.snapshot.params.attribute;
-    this.currentAttributeId = this.activatedRoute.snapshot.params.id;
+    let currentAttribute: string;
+    if (this.selectedAttribute && this.selectedAttributeId) {
+      currentAttribute = this.selectedAttribute;
+      this.currentAttributeId = this.selectedAttributeId;
+    } else {
+      currentAttribute = this.activatedRoute.snapshot.params.attribute;
+      this.currentAttributeId = this.activatedRoute.snapshot.params.id;
+    }
     if (this.currentAttributeId !== this.previousAttributeId) {
       this.size = 12;
       this.isPageFullLoaded = false;
@@ -104,7 +111,7 @@ export class ProductListComponent implements OnInit {
     if (this.totalElements > this.size) {
       this.size += 12;
       this.showListProducts();
-      if (this.totalElements < this.size) {
+      if (this.totalElements <= this.size) {
         this.isPageFullLoaded = true;
       }
     }
@@ -117,25 +124,12 @@ export class ProductListComponent implements OnInit {
     };
   }
 
-  onOpenAddProductModal(): void {
-    const modalRef = this.modalService.open(AddProductComponent, {
-      size: 'lg',
-      windowClass: 'modal-holder',
-    });
-    modalRef.componentInstance.test = {message: 'text'};
-  }
-
-  onOpenAddCategoryModal(): void {
-    this.modalService.open(AddCategoryComponent, {
-      size: 'lg',
-      windowClass: 'modal-holder',
+  onActivate(): void {
+    window.scroll({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
     });
   }
 
-  onOpenAddProducerModal(): void {
-    this.modalService.open(AddProducerComponent, {
-      size: 'lg',
-      windowClass: 'modal-holder',
-    });
-  }
 }

@@ -1,0 +1,33 @@
+<div class="alert alert-warning" *ngIf="!products.length"><strong>Warning! </strong> There is no products loaded!</div>
+<div class="row">
+  <div *ngFor="let product of products" class="{{ rawClass }}">
+    <div class="card product">
+      <div class="card-body">
+        <a routerLink="/product-details/{{ product.id }}" (click)="onActivate()">
+          <div class="img-thumbnail">
+            <img class="img-fluid" [src]="bucketUrl + product.imageUrl" alt="notebook" />
+          </div>
+        </a>
+        <div class="name mt-1">{{ product.name }}</div>
+        <div class="code">Code: {{ product.id.slice(0, 3) }}</div>
+        <div class="price">{{ product.price | currency: 'USD' }}</div>
+        <a (click)="onAddToCart(product)" class="btn btn-outline-dark btn-sm" style="float: right"> Add to cart </a>
+
+        <ul class="list-group">
+          <li class="list-group-item">
+            <small>Category:</small>
+            <span class="category"> {{ product?.category?.name }} </span>
+          </li>
+          <li class="list-group-item">
+            <small>Producer:</small>
+            <span class="producer"> {{ product?.producer?.name }} </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="products.length > 0 && !isPageFullLoaded" class="text-center hidden-print mb-4">
+    <button (click)="loadMore()" id="loadMore" class="btn btn-dark">Load more products</button>
+  </div>
+</div>

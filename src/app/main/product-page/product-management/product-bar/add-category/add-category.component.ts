@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { Category, CreateCategoryParam } from '../../../../model/models';
-import { ProductService } from '../../../../service/product.service';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Category, CreateCategoryParam } from '../../../../../model/models';
+import { ProductService } from '../../../../../service/product.service';
 
 @Component({
   selector: 'app-add-category',

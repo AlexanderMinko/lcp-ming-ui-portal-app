@@ -1,0 +1,21 @@
+<h4>Orders</h4>
+<hr />
+<ng-template #noOrders>
+  <div class="alert alert-warning" role="alert">You have no orders!</div>
+</ng-template>
+<table *ngIf="orders.length > 0; else noOrders" class="table table-bordered">
+  <thead>
+    <tr>
+      <th width="10%">ID</th>
+      <th width="90%">Created time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let order of orders">
+      <td>{{ order.id.slice(0, 8) }}</td>
+      <td>
+        <a routerLink="/order-details/{{ order.id }}">{{ order.createdDate | date: 'y MMMM d, HH:mm' }}</a>
+      </td>
+    </tr>
+  </tbody>
+</table>

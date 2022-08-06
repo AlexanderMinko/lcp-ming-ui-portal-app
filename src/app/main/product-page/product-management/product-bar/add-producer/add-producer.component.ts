@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { ProductService } from '../../../../service/product.service';
-import { CreateCategoryParam, CreateProducerParam, Producer } from '../../../../model/models';
+import { CreateProducerParam, Producer } from '../../../../../model/models';
+import { ProductService } from '../../../../../service/product.service';
 
 @Component({
   selector: 'app-add-producer',

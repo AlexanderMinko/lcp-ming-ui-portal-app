@@ -11,6 +11,10 @@ import { filter, switchMap } from 'rxjs/operators';
 import { ReviewService } from '../../service/review.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EditProductComponent } from './edit-product/edit-product.component';
+import { DeleteProductComponent } from './delete-product/delete-product.component';
+import { ToastrService } from 'ngx-toastr';
+import { Environment } from '../../../environments/environment';
+import { IMAGE_BASE_URL } from '../../constants';
 
 @Component({
   selector: 'app-product-details',
@@ -27,14 +31,8 @@ export class ProductDetailsComponent implements OnInit {
   currentViewReplies: string[] = [];
   userProfile: Keycloak.KeycloakProfile;
   uploadProductVideos: FormGroup;
-  imageBaseUrl = 'http://localhost:9000/ming';
+  bucketUrl = IMAGE_BASE_URL + '/ming';
   isLcpAdmin: boolean;
-
-  products: Product[] = [];
-  page = 0;
-  size = 12;
-  totalElements = 0;
-  isPageFullLoaded = false;
 
   constructor(
     private productService: ProductService,
@@ -44,7 +42,8 @@ export class ProductDetailsComponent implements OnInit {
     private keycloakService: KeycloakService,
     public authService: AuthService,
     private reviewService: ReviewService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -52,19 +51,10 @@ export class ProductDetailsComponent implements OnInit {
     this.initProductInfo();
     this.initReviewForm();
     this.initProductVideosForm();
-    this.showAllListProducts();
     this.isLcpAdmin = this.authService.isLcpAdmin();
-  }
-
-  showAllListProducts(): void {
-    this.productService.getProducts(this.page, this.size).subscribe(this.proceedResult());
-  }
-
-  private proceedResult(): (data: ProductResponse) => void {
-    return (data: ProductResponse) => {
-      this.products = data.content;
-      this.totalElements = data.totalElements;
-    };
+    this.productService.productEditedSubject.subscribe(() => {
+      this.initProductInfo();
+    });
   }
 
   private initProductVideosForm(): void {
@@ -145,7 +135,7 @@ export class ProductDetailsComponent implements OnInit {
   getProduct(): void {
     this.productService.getProductById(this.productId).subscribe((product) => {
       this.product = product;
-      this.product.imageUrl = this.imageBaseUrl + this.product.imageUrl;
+      this.productService.productCategory$.next(product.category.id);
     });
   }
 
@@ -181,10 +171,19 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   onOpenEditProductModal(): void {
-    this.modalService.open(EditProductComponent, {
+    const modalRef = this.modalService.open(EditProductComponent, {
       size: 'lg',
       windowClass: 'modal-holder',
     });
+    modalRef.componentInstance.product = this.product;
+  }
+
+  onOpenDeleteProductModal(): void {
+    const modalRef = this.modalService.open(DeleteProductComponent, {
+      size: 'lg',
+      windowClass: 'modal-holder',
+    });
+    modalRef.componentInstance.product = this.product;
   }
 
   get videos(): AbstractControl | null {
@@ -195,39 +194,36 @@ export class ProductDetailsComponent implements OnInit {
     console.log(this.videos?.value);
     const files = this.videos?.value as File[];
     Array.from(files).forEach((file) => {
-      this.productService.uploadProductVideo(this.productId, file).subscribe(() => {
-        console.log(`file: ${file.name} uploaded`);
-        this.getProduct();
-      });
+      this.productService.uploadProductVideo(this.productId, file).subscribe(
+        () => {
+          console.log(`file: ${file.name} uploaded`);
+          this.getProduct();
+          this.toastr.success(`Video ${file.name} successfully uploaded`);
+        },
+        (error) => () => {
+          this.toastr.error('Upload Error');
+        }
+      );
     });
-    // this.productService.uploadProductVideos(this.productId, this.videos?.value as File[])
-    //   .subscribe(() => {
-    //     console.log('published');
-    //   });
   }
 
-  onFileChanged(event): void {
-    const files = event.target.files;
+  onFileChanged(event: Event): void {
+    const files: FileList = (event.target as HTMLInputElement).files as FileList;
     this.uploadProductVideos.patchValue({
       videos: files,
     });
   }
 
-  onRemove(id: string, name: string): void {
+  onRemoveVideo(id: string, name: string): void {
     const removeVideoParam = {
       productId: id,
       videoName: name,
     } as RemoveVideoParam;
-    this.productService.removeVideo(removeVideoParam).subscribe({ next: () => this.getProduct() });
-  }
-
-  loadMore(): void {
-    if (this.totalElements > this.size) {
-      this.size += 12;
-      this.showAllListProducts();
-      if (this.totalElements < this.size) {
-        this.isPageFullLoaded = true;
-      }
-    }
+    this.productService.removeVideo(removeVideoParam).subscribe({
+      next: () => {
+        this.getProduct();
+        this.toastr.success(`Video ${name} successfully removed`);
+      },
+    });
   }
 }

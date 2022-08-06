@@ -13,6 +13,7 @@ import {
 import { CreateAccountParam } from '../../model/models';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +25,12 @@ export class LoginComponent implements OnInit {
   errorMessage: string;
   url: string | ArrayBuffer | null | undefined = 'assets/images/avatar/BasePhoto.jpg';
 
-  constructor(public activeModal: NgbActiveModal, private authService: AuthService, private formBuilder: FormBuilder) {}
+  constructor(
+    public activeModal: NgbActiveModal,
+    private authService: AuthService,
+    private formBuilder: FormBuilder,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this.authFormGroup = this.formBuilder.group(
@@ -112,17 +118,20 @@ export class LoginComponent implements OnInit {
       } as CreateAccountParam;
       this.authService.customRegistrationAccount(createAccountParam, this.image?.value).subscribe(() => {
         this.activeModal.dismiss('Cross click');
+        this.toastr.success('Account successfully registered. You can sign in.', '', {
+          closeButton: true
+        });
       });
     }
   }
 
-  onFileChanged(event): void {
-    const input = event.target.files[0];
+  onFileChanged(event: Event): void {
+    const files: FileList = (event.target as HTMLInputElement).files as FileList;
     this.authFormGroup.patchValue({
-      image: input,
+      image: files[0],
     });
     const reader = new FileReader();
-    reader.readAsDataURL(event.target.files[0]);
+    reader.readAsDataURL(files[0]);
     reader.onload = (readerEvent) => {
       this.url = readerEvent?.target?.result;
     };

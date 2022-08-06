@@ -1,0 +1,16 @@
+<div class="modal-header">
+  <h4 class="modal-title">Delete product: {{ product.id }} </h4>
+  <a ngbAutofocus type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </a>
+</div>
+<div class="modal-body">
+  <div style="text-align: center">
+    <img src="assets/images/pages/danger.jpg" class="img-fluid not-found" width="200" >
+    <h4>Are you sure to remove this product?</h4>
+    <div class="btn-group" role="group" aria-label="Basic outlined example" style="width: 100%">
+      <button class="btn btn-danger" (click)="onDeleteProduct()" type="button">Yes</button>
+      <button class="btn btn-info" (click)="activeModal.dismiss('Cross click')" type="button">No</button>
+    </div>
+  </div>
+</div>

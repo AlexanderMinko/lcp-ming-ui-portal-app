@@ -95,11 +95,11 @@ export interface OrderItemResponseDto {
   count: number;
 }
 
-export interface OrderRequestDto {
+export interface CreateOrderParam {
   orderItemRequestsDto: OrderItemRequestDto[];
 }
 
-export interface OrderResponseDto {
+export interface Order {
   id: string;
   createdDate: Date;
 }
@@ -113,6 +113,16 @@ export interface CreateAccountParam {
 }
 
 export interface CreateProductParam {
+  name: string;
+  description: string;
+  price: string;
+  category: string;
+  producer: string;
+  image: any;
+}
+
+export interface UpdateProductParam {
+  id: string;
   name: string;
   description: string;
   price: string;
@@ -139,7 +149,13 @@ export interface RemoveVideoParam {
 }
 
 export interface Account {
+  id: string
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
   photoUrl: string;
   realmName: string;
   accountStatus: string;
+  channels: string[];
 }

@@ -5,9 +5,7 @@
   </a>
 </div>
 <div class="modal-body">
-
   <form [formGroup]="createProductGroup" (ngSubmit)="onSubmitProduct()">
-
     <div class="row" style="padding: 15px">
       <div class="col-6">
         <div class="form-group">
@@ -52,9 +50,7 @@
           <label for="image">Image</label>
           <input type="file" (change)="onFileChanged($event)" class="form-control" id="image" />
         </div>
-        <div style="text-align: center">
-          <img [src]="url" class="mb-2" style="width: 100%" />
-        </div>
+        <img [src]="url" class="mb-2" style="width: 100%" />
       </div>
     </div>
   </form>

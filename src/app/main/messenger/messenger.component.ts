@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Observable, Observer, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import Keycloak from 'keycloak-js';
@@ -8,65 +8,72 @@ import { SseClient } from 'angular-sse-client';
 import { closeEventSource } from 'angular-sse-client';
 import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
 import { KeycloakService } from 'keycloak-angular';
+import { Account } from '../../model/models';
+import { switchMap } from 'rxjs/operators';
+import { Environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-messenger',
   templateUrl: './messenger.component.html',
   styleUrls: ['./messenger.component.css'],
 })
-export class MessengerComponent implements OnInit {
-  results: Message[] = [];
+export class MessengerComponent implements OnInit, AfterViewChecked {
+  channels: Channel[] = [];
+  messages: Message[] = [];
   resultObserver: Observable<Message[]>;
-  channel: string;
-  isLoggedIn: boolean;
+  channelId: string;
   userProfile: Keycloak.KeycloakProfile;
+  account: Account;
   messageFormGroup: FormGroup;
-  private readonly baseUrl = 'http://localhost:8099/v1/messages';
+  private readonly baseUrl = Environment.messageServiceUrl + '/v1/messages';
+  private readonly baseUrlChannels = Environment.messageServiceUrl + '/v1/channels';
 
   constructor(
     public http: HttpClient,
     public authService: AuthService,
     private formBuilder: FormBuilder,
-    private sseClient: SseClient,
-    private keycloakService: KeycloakService
+    private cdr: ChangeDetectorRef
   ) {}
 
+  ngAfterViewChecked(): void {
+    this.cdr.detectChanges();
+  }
+
   ngOnInit(): void {
-    this.authService.isLoggedIn().subscribe((isLogged) => (this.isLoggedIn = isLogged));
-
-    this.authService.getCurrentUserProfile().subscribe((loadedProfile) => {
-      this.userProfile = loadedProfile;
-    });
-
-    // const source = new EventSourcePolyfill(
-    //   `${this.baseUrl}/stream/2`,
-    //   this.options
-    // );
-    //
-    // source.addEventListener('message', (event) => {
-    //   console.log(event.data);
-    //   this.results.push(JSON.parse(event.data));
-    // });
+    this.authService
+      .getCurrentUserProfile()
+      .pipe(
+        switchMap((userProfile) => {
+          this.userProfile = userProfile;
+          return this.authService.getAccount(userProfile.id);
+        })
+      )
+      .subscribe((account) => {
+        this.account = account;
+        this.getChannelsByIds(account.channels).subscribe((channels) => {
+          this.channels = channels;
+        });
+      });
 
     this.messageFormGroup = this.formBuilder.group({
       messageContent: new FormControl('', [Validators.required, Validators.minLength(2)]),
     });
   }
 
-  onDeleteMessage(): void {
-    // this.results = this.results.filter((message) => message.id !== id);
-    this.http.get(`http://localhost:8099/v1/messages/find/1`).subscribe();
-    this.http.delete(`http://localhost:8099/v1/messages/626a5888dc751b784c06b2a9`).subscribe();
-    // this.resultObserver = this.createEventSourceObserver();
-    // console.log(this.results);
+  getChannels(): Observable<Channel[]> {
+    return this.http.get<Channel[]>(`${this.baseUrlChannels}`);
+  }
+
+  getChannelsByIds(channelIds: string[]): Observable<Channel[]> {
+    return this.http.post<Channel[]>(`${this.baseUrlChannels}/by-ids`, channelIds);
   }
 
   createEventSourceObserver(channel: string): Observable<Message[]> {
     return new Observable<Message[]>((observer: Observer<Message[]>) => {
       const source = new EventSource(`${this.baseUrl}/stream/${channel}`);
       source.addEventListener('message', (event) => {
-        this.results.push(JSON.parse(event.data));
-        observer.next(this.results);
+        this.messages.push(JSON.parse(event.data));
+        observer.next(this.messages);
       });
       return () => source.close();
     });
@@ -81,8 +88,8 @@ export class MessengerComponent implements OnInit {
         heartbeatTimeout: Number.MAX_SAFE_INTEGER,
       });
       source.addEventListener('message', (event) => {
-        this.results.push(JSON.parse(event.data));
-        observer.next(this.results);
+        this.messages.push(JSON.parse(event.data));
+        observer.next(this.messages);
       });
       source.addEventListener('error', (error) => {
         console.log(error);
@@ -91,31 +98,13 @@ export class MessengerComponent implements OnInit {
     });
   }
 
-  async onChange(channel: string): Promise<void> {
-    // this.createEventSourceObserver2(channel).subscribe();
-    // this.channel = (events.target as HTMLInputElement).value;
-    this.channel = channel;
-    this.results = [];
-    console.log('onChange');
-    console.log(this.channel);
-    const token = await this.keycloakService.getToken();
-    this.resultObserver = this.createEventSourceObserverSecured(this.channel, 'Bearer ' + token);
-
-    // closeEventSource(`${this.baseUrl}/stream/${this.channel}`);
-    // // this.stream?.unsubscribe();
-    // this.stream = this.sseClient
-    //   .get(`${this.baseUrl}/stream/${this.channel}`, {
-    //     withCredentials: true,
-    //     keepAlive: false,
-    //   })
-    //   .subscribe((response) => {
-    //     this.results.push(response);
-    //     console.log(response);
-    //     const messageEvent = response as MessageEvent;
-    //     this.results.push(JSON.parse(messageEvent.data));
-    //     console.log(JSON.parse(messageEvent.data));
-    //   });
-    // console.log(this.results);
+  onChange(channelId: string): void {
+    this.channelId = channelId;
+    this.messages = [];
+    this.authService.getToken().subscribe((token) => {
+      this.resultObserver = this.createEventSourceObserverSecured(this.channelId, 'Bearer ' + token);
+      this.cdr.detectChanges();
+    });
   }
 
   get messageContent(): AbstractControl | null {
@@ -126,10 +115,9 @@ export class MessengerComponent implements OnInit {
     console.log(this.messageContent?.value);
     const message = {
       content: this.messageContent?.value,
-      author: this.userProfile.firstName,
-      channel: this.channel,
+      authorId: this.userProfile.id,
+      channelId: this.channelId,
     } as Message;
-    console.log(message);
     this.http.post(this.baseUrl, message).subscribe(() => {
       this.messageContent?.reset();
     });
@@ -139,6 +127,11 @@ export class MessengerComponent implements OnInit {
 export interface Message {
   id: string;
   content: string;
-  author: string;
-  channel: string;
+  authorId: string;
+  channelId: string;
+}
+
+export interface Channel {
+  id: string;
+  name: string;
 }

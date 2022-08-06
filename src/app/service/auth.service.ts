@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { from, Observable, ObservedValueOf, of } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { from, Observable, Subject } from 'rxjs';
 import { KeycloakService } from 'keycloak-angular';
 import Keycloak from 'keycloak-js';
 import { Account, CreateAccountParam } from '../model/models';
-import { filter, switchMap } from 'rxjs/operators';
+import { filter, switchMap, tap } from 'rxjs/operators';
 import { LCP_ADMIN } from '../constants';
+import { Environment } from '../../environments/environment';
 
 const FORM_DATA_JSON = 'application/json';
 
@@ -13,11 +14,26 @@ const FORM_DATA_JSON = 'application/json';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly baseUrl = 'http://localhost:8094/accounts';
+  private readonly apiUrl = Environment.production ? Environment.apiUrl : Environment.accountServiceUrl;
+  private readonly baseUrl = this.apiUrl + '/account-service/accounts';
+  isLoggedChange$ = new Subject<boolean>();
+  isLogged: boolean = false;
+
   constructor(private http: HttpClient, private keycloak: KeycloakService) {}
 
   isLcpAdmin(): boolean {
     return this.keycloak.isUserInRole(LCP_ADMIN);
+  }
+
+  checkRecentLoggedIn(): void {
+    this.isLoggedIn()
+      .pipe(
+        tap((value) => {
+          this.isLoggedChange$.next(value !== this.isLogged);
+          this.isLogged = value;
+        })
+      )
+      .subscribe();
   }
 
   isLoggedIn(): Observable<boolean> {
@@ -28,8 +44,8 @@ export class AuthService {
     return from(this.keycloak.login());
   }
 
-  async logOut(): Promise<void> {
-    await this.keycloak.logout('http://localhost:4200');
+  logOut(): Observable<void> {
+    return from(this.keycloak.logout(Environment.appUrl));
   }
 
   loadUserProfile(): Observable<Keycloak.KeycloakProfile> {
@@ -43,6 +59,14 @@ export class AuthService {
       formData.append('imageFile', image, image.name);
     }
     return this.http.post<void>(`${this.baseUrl}/register`, formData);
+  }
+
+  getAccounts(page: number, size: number, freeText: string): Observable<AccountResponse> {
+    let params = new HttpParams().set('page', page).set('size', size);
+    if (freeText) {
+      params = params.set('free_text', freeText);
+    }
+    return this.http.get<AccountResponse>(`${this.baseUrl}`, { params });
   }
 
   getAccount(id: string | undefined): Observable<Account> {
@@ -71,8 +95,17 @@ export class AuthService {
   isUserExist(field: string, value: string): Observable<boolean> {
     return this.http.get<boolean>(`${this.baseUrl}/check/${field}/${value}`);
   }
+
+  getToken(): Observable<string> {
+    return from(this.keycloak.getToken());
+  }
 }
 
 export interface PhotoResponse {
   photo: string;
+}
+
+export interface AccountResponse {
+  content: Account[];
+  totalElements: number;
 }

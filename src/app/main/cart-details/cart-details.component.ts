@@ -2,12 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import {
   CartItem,
   OrderItemRequestDto,
-  OrderRequestDto,
+  CreateOrderParam,
 } from '../../model/models';
 import { CartService } from '../../service/cart.service';
 import { OrderService } from '../../service/order.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../service/auth.service';
+import { Environment } from '../../../environments/environment';
+import { IMAGE_BASE_URL } from '../../constants';
 
 @Component({
   selector: 'app-cart-details',
@@ -19,8 +21,7 @@ export class CartDetailsComponent implements OnInit {
   cartItems: CartItem[] = [];
   totalPrice = 0;
   totalQuantity = 0;
-
-  imageBaseUrl = 'http://localhost:9000/ming';
+  bucketUrl = IMAGE_BASE_URL + '/ming';
 
   constructor(
     private cartService: CartService,
@@ -43,7 +44,7 @@ export class CartDetailsComponent implements OnInit {
     const cartItems = this.cartItems.map((el) => new OrderItemRequestDto(el));
     const orderRequestDto = {
       orderItemRequestsDto: cartItems,
-    } as OrderRequestDto;
+    } as CreateOrderParam;
     this.orderService.makeOrder(orderRequestDto).subscribe((data) => {
       this.cartService.clearStorage('cartItems');
       this.router.navigate(['/order-details', data]);

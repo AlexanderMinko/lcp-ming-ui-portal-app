@@ -9,7 +9,9 @@ import {
   Producer,
   Product,
   RemoveVideoParam,
+  UpdateProductParam,
 } from '../model/models';
+import { Environment } from '../../environments/environment';
 
 const FORM_DATA_JSON = 'application/json';
 
@@ -17,13 +19,16 @@ const FORM_DATA_JSON = 'application/json';
   providedIn: 'root',
 })
 export class ProductService {
-  private readonly baseUrl = 'http://localhost:8090/products';
-  private readonly categoriesBaseUrl = 'http://localhost:8090/categories';
-  private readonly producersBaseUrl = 'http://localhost:8090/producers';
+  private readonly apiUrl = Environment.production ? Environment.apiUrl : Environment.productServiceUrl;
+  private readonly baseUrl = this.apiUrl + '/product-service/products';
+  private readonly categoriesBaseUrl = this.apiUrl + '/product-service/categories';
+  private readonly producersBaseUrl = this.apiUrl + '/product-service/producers';
 
   public productAddedSubject = new Subject<Product>();
+  public productEditedSubject = new Subject<Product>();
   public categoryAddedSubject = new Subject<Category>();
   public producerAddedSubject = new Subject<Producer>();
+  public productCategory$ = new Subject<string>();
 
   constructor(private http: HttpClient) {}
 
@@ -61,6 +66,19 @@ export class ProductService {
     formData.append('createParamJson', new Blob([JSON.stringify(createProductParam)], { type: FORM_DATA_JSON }));
     formData.append('imageFile', image, image.name);
     return this.http.post<Product>(`${this.baseUrl}`, formData);
+  }
+
+  updateProduct(updateProductParam: UpdateProductParam, image: File): Observable<Product> {
+    const formData = new FormData();
+    formData.append('createParamJson', new Blob([JSON.stringify(updateProductParam)], { type: FORM_DATA_JSON }));
+    if (image) {
+      formData.append('imageFile', image, image.name);
+    }
+    return this.http.patch<Product>(`${this.baseUrl}`, formData);
+  }
+
+  deleteProduct(productId: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${productId}`);
   }
 
   uploadProductVideos(id: string, files: File[]): Observable<void> {

@@ -1,50 +1,63 @@
 <div class="modal-header">
-  <h4 class="modal-title">Add new product</h4>
+  <h4 class="modal-title">Edit product: {{ product.id }}</h4>
   <a ngbAutofocus type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
     <span aria-hidden="true">&times;</span>
   </a>
 </div>
 <div class="modal-body">
-  <form [formGroup]="updateProductGroup" (ngSubmit)="onSubmitProduct()">
-    <div class="form-group">
-      <label for="productName">Name</label>
-      <input type="text" formControlName="name" class="form-control" id="productName" />
-    </div>
-    <div class="form-group">
-      <label for="productDescription">Description</label>
-      <textarea type="text" formControlName="description" class="form-control" id="productDescription"> </textarea>
-    </div>
-    <div class="form-group">
-      <label for="productPrice">Price</label>
-      <input type="text" formControlName="price" class="form-control" id="productPrice" />
-    </div>
-    <div class="row">
+  <form [formGroup]="updateProductGroup" (ngSubmit)="onSubmit()">
+    <div class="row" style="padding: 15px">
       <div class="col-6">
         <div class="form-group">
-          <label for="productCategory">Category</label>
-          <select formControlName="category" class="custom-select" id="productCategory">
-            <option *ngFor="let category of categories" value="{{ category.id }}">
-              {{ category.displayName }}
-            </option>
-          </select>
+          <label for="productName">Name</label>
+          <input type="text" formControlName="name" class="form-control" id="productName" />
         </div>
+        <div class="form-group">
+          <label for="productDescription">Description</label>
+          <textarea
+            type="text"
+            formControlName="description"
+            class="form-control"
+            id="productDescription"
+            style="height: 150px"
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="productPrice">Price</label>
+          <input type="text" formControlName="price" class="form-control" id="productPrice" />
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <div class="form-group">
+              <label for="productCategory">Category</label>
+              <select formControlName="category" class="custom-select" id="productCategory">
+                <option *ngFor="let category of categories" value="{{ category.id }}">
+                  {{ category.displayName }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="form-group">
+              <label for="productProducer">Producer</label>
+              <select formControlName="producer" class="custom-select" id="productProducer">
+                <option *ngFor="let producer of producers" value="{{ producer.id }}">
+                  {{ producer.displayName }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-danger" type="submit" style="width: 100%">Update product</button>
       </div>
       <div class="col-6">
         <div class="form-group">
-          <label for="productProducer">Producer</label>
-          <select formControlName="producer" class="custom-select" id="productProducer">
-            <option *ngFor="let producer of producers" value="{{ producer.id }}">
-              {{ producer.displayName }}
-            </option>
-          </select>
+          <label for="image">Image</label>
+          <input type="file" (change)="onFileChanged($event)" class="form-control" id="image" />
         </div>
+        <img [src]="url" class="mb-2" style="width: 100%" />
       </div>
     </div>
-    <div class="form-group">
-      <label for="image">Image</label>
-      <input type="file" class="form-control" id="image" />
-    </div>
-    <button class="btn btn-danger" type="submit" style="width: 100%">Create product</button>
   </form>
 </div>
-

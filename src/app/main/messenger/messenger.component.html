@@ -1,28 +1,17 @@
-<!-- Name Field -->
 <div class="row">
   <div class="col-3">
-    <label class="form-label">Channels</label>
-    <div class="list-group">
-      <a (click)="onChange('1')" class="list-group-item list-group-item-action" [ngClass]="{ active: channel == '1' }"
-        >Chetkie pacani</a
-      >
-      <a (click)="onChange('2')" class="list-group-item list-group-item-action" [ngClass]="{ active: channel == '2' }"
-        >Animeshniki</a
-      >
-      <a (click)="onChange('3')" class="list-group-item list-group-item-action" [ngClass]="{ active: channel == '3' }"
-        >Petushari</a
-      >
-      <a (click)="onChange('4')" class="list-group-item list-group-item-action" [ngClass]="{ active: channel == '4' }"
-        >Gamnaedy</a
-      >
-      <!--      <span class="input-group-text">Channel</span>-->
-      <!--      <select [disabled]="!userProfile" (change)="onChange($event)" class="custom-select">-->
-      <!--        <option disabled selected hidden>Choose...</option>-->
-      <!--        <option value="1">Chetkie pacani</option>-->
-      <!--        <option value="2">Animeshniki</option>-->
-      <!--        <option value="3">Petushari</option>-->
-      <!--        <option value="4">Gamnaedy</option>-->
-      <!--      </select>-->
+    <div class="card mb-3">
+      <div class="card-header"><i class="fas fa-list"></i> Channels</div>
+      <div class="list-group" style="border-radius: 0%">
+        <div *ngFor="let channel of channels">
+          <a
+            (click)="onChange(channel.id)"
+            class="list-group-item list-group-item-action"
+            [ngClass]="{ active: channelId == channel.id }"
+            >{{ channel.name }}</a
+          >
+        </div>
+      </div>
     </div>
   </div>
   <div class="col-8">
@@ -33,9 +22,11 @@
     <!-- All chat messages will be appended here -->
     <div class="mb-3">
       <label class="form-label">Messages</label>
-      <div class="form-control overflow-auto" style="height: 500px">
+      <div #scrollMe class="form-control overflow-auto" style="overflow: scroll; height: 500px" [scrollTop]="scrollMe.scrollHeight">
         <div *ngFor="let result of resultObserver | async">
-          <b [style.color]="result.author === userProfile.firstName ? 'red' : ''">{{ result.author }} :</b>
+          <b [style.color]="result.authorId === userProfile.id ? 'red' : ''"
+            >{{ userProfile.firstName }} {{ userProfile.lastName }} :</b
+          >
           {{ result.content }}
         </div>
       </div>
@@ -45,38 +36,9 @@
     <form [formGroup]="messageFormGroup" (ngSubmit)="onSubmit()">
       <div class="input-group mb-3">
         <input formControlName="messageContent" type="text" class="form-control" placeholder="Type your message here" />
-        <button [disabled]="!channel" class="btn btn-secondary" type="submit">Send</button>
+        <button [disabled]="!channelId" class="btn btn-secondary" type="submit">Send</button>
       </div>
     </form>
-    <button (click)="onDeleteMessage()" class="btn btn-secondary">DELETE</button>
+    <button class="btn btn-secondary">DELETE</button>
   </div>
 </div>
-
-<!--<table class="table table-bordered">-->
-<!--    <thead>-->
-<!--    <tr>-->
-<!--        <th>Id</th>-->
-<!--        <th>content</th>-->
-<!--        <th>channel</th>-->
-<!--        <th>delete</th>-->
-<!--    </tr>-->
-<!--    </thead>-->
-<!--    <tbody>-->
-<!--    <tr *ngFor="let message of results">-->
-<!--        <td>-->
-<!--            <div>{{ message.id }}</div>-->
-<!--        </td>-->
-<!--        <td>-->
-<!--            <div>{{ message.content }}</div>-->
-<!--        </td>-->
-<!--        <td>-->
-<!--            <div>{{ message.channel }}</div>-->
-<!--        </td>-->
-<!--        <td>-->
-<!--            <button (click)="onDeleteMessage(message.id)" class="btn btn-danger">-->
-<!--                Delete-->
-<!--            </button>-->
-<!--        </td>-->
-<!--    </tr>-->
-<!--    </tbody>-->
-<!--</table>-->
